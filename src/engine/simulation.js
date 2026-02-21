@@ -2,6 +2,7 @@
 
 const { nextRaw } = require('./random');
 const { payOverseers } = require('./overseers');
+const { monthlyInterest, adjustCreditRating, handleNegativeGoldOverseers } = require('./loans');
 
 function snapshotPrev(state) {
   return {
@@ -29,6 +30,9 @@ function checkRandomEvent(state) {
 function simulateMonth(state) {
   state.prev = snapshotPrev(state);
   payOverseers(state);
+  monthlyInterest(state);
+  adjustCreditRating(state);
+  handleNegativeGoldOverseers(state, state.rng);
   checkRandomEvent(state);
   advanceMonth(state);
   return state;

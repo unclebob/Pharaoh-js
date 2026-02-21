@@ -5,7 +5,12 @@ const { createGameState } = require('../../src/engine/state');
 const { setDifficulty, forceEasyIfUnlicensed } = require('../../src/engine/difficulty');
 const { simulateMonth } = require('../../src/engine/simulation');
 const { refreshOffers } = require('../../src/engine/contracts');
-const { borrow } = require('../../src/engine/loans');
+const {
+  borrow, offerCreditCheck, executeCreditCheck,
+  repay, monthlyInterest, adjustCreditRating,
+  processEmergencyLoan, checkForeclosure,
+  handleNegativeGoldOverseers
+} = require('../../src/engine/loans');
 const { openingMessages, getOpeningMessage } = require('../../src/engine/messages');
 
 class PharaohWorld {
@@ -29,7 +34,8 @@ class PharaohWorld {
   }
 
   borrowFromBank(amount) {
-    this.borrowedAmount = borrow(this.state, amount);
+    this.borrowResult = borrow(this.state, amount);
+    this.borrowedAmount = this.borrowResult.amount || 0;
   }
 
   deliverOpeningMessage() {

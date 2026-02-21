@@ -286,6 +286,169 @@ const noFunctionSelectedMessages = [
   "First decide whether to buy or sell, great Pharaoh."
 ];
 
+// ── Loan Messages (Appendix A.10) ──
+
+const creditCheckFeeMessages = [
+  "It will cost you %.0f to find out if you qualify.",
+  "A credit investigation will run you %.0f gold.",
+  "The banker requires %.0f gold to check your credit.",
+  "For a mere %.0f gold, we can check your standing.",
+  "Credit check fee: %.0f gold. Take it or leave it.",
+  "The scribes demand %.0f gold to review your finances.",
+  "A thorough financial review costs %.0f gold.",
+  "The bank charges %.0f gold for a credit assessment.",
+  "It takes %.0f gold to grease the wheels of banking.",
+  "For %.0f gold, I can look into your creditworthiness.",
+  "The fee for a credit evaluation is %.0f gold.",
+  "My accountants charge %.0f gold for their services.",
+  "A small fee of %.0f gold to check the books.",
+  "The bank requires a deposit of %.0f gold for the review.",
+  "Pay %.0f gold and we shall see what you can borrow."
+];
+
+const loanApprovalMessages = [
+  "Congratulations! You have been approved for %.0f gold at %.2f%% interest.",
+  "The bank grants you %.0f gold. Interest rate: %.2f%%.",
+  "Your loan of %.0f gold is approved. Do try to pay it back. Interest: %.2f%%.",
+  "Here is your %.0f gold. Remember, %.2f%% interest applies.",
+  "The banker smiles. %.0f gold at %.2f%% interest is yours.",
+  "Approved! %.0f gold, %.2f%% interest. Try not to spend it all at once.",
+  "The coffers open. %.0f gold flows your way at %.2f%% interest.",
+  "Your credit is good for %.0f gold. Interest: %.2f%%.",
+  "The bank reluctantly parts with %.0f gold at %.2f%% interest.",
+  "Loan granted: %.0f gold, %.2f%% per month. Good luck.",
+  "The scribes approve your %.0f gold loan at %.2f%%.",
+  "Take your %.0f gold and spend wisely. Interest: %.2f%%.",
+  "The vault opens for %.0f gold. Monthly rate: %.2f%%.",
+  "You may borrow %.0f gold at the rate of %.2f%%.",
+  "Done! %.0f gold at %.2f%%. The banker expects prompt repayment."
+];
+
+const loanDenialMessages = [
+  "Your credit is not sufficient. The loan is denied.",
+  "The bank laughs at your request. Denied!",
+  "Not a chance. Your finances are a disaster.",
+  "The banker shakes his head. No loan for you.",
+  "Denied! Perhaps try living within your means.",
+  "Your credit rating is abysmal. Request denied.",
+  "The bank has standards, and you do not meet them.",
+  "Ha! You want to borrow? With YOUR credit? Denied.",
+  "The scribes have reviewed your request. The answer is no.",
+  "Not even the most desperate moneylender would fund you.",
+  "Denied. The bank suggests you sell some assets.",
+  "Your net worth does not support this loan. Denied.",
+  "The banker politely declines. Actually, not politely.",
+  "No. Just no. Your financial situation is dire.",
+  "The bank vault remains firmly closed to you."
+];
+
+const loanRepaymentMessages = [
+  "The debt is paid! You are free at last.",
+  "Payment received. The banker nods approvingly.",
+  "Your loan is repaid in full. Well done!",
+  "The scribes mark your debt as settled.",
+  "Freedom from debt! The banker bids you farewell.",
+  "Paid in full. The bank thanks you for your business.",
+  "Your account is clear. The banker smiles."
+];
+
+const loanRepaymentSignoffMessages = [
+  "May your future be free of debt.",
+  "Go forth and prosper, debt-free one.",
+  "The gods reward those who honor their debts.",
+  "Until next time you need our services.",
+  "A clean slate is a beautiful thing.",
+  "Now try to keep it that way.",
+  "The banker waves goodbye to a good customer.",
+  "May you never darken these doors again."
+];
+
+const cashShortageMessages = [
+  "You have run out of cash!",
+  "Your treasury is empty! This is a crisis.",
+  "No gold remains in your coffers.",
+  "The treasury is bare. You are broke.",
+  "Your gold has run out. Desperate times ahead.",
+  "Not a single gold piece remains. Emergency!",
+  "The coffers echo with emptiness.",
+  "You are flat broke. The bankers are circling.",
+  "Gold? What gold? You have none.",
+  "Financial ruin stares you in the face."
+];
+
+const foreclosureMessages = [
+  "The bank forecloses! Your kingdom is seized.",
+  "Foreclosure! The bankers take everything.",
+  "Your debts have consumed your kingdom. Game over.",
+  "The bank has foreclosed on your assets. You are ruined.",
+  "Foreclosure! The moneylenders claim your throne.",
+  "Your kingdom is forfeit. The bank takes all.",
+  "The bankers arrive with armed guards. Foreclosure!",
+  "Debt has destroyed your reign. The bank forecloses.",
+  "The scribes seal the foreclosure notice. It is over.",
+  "Your empire crumbles under the weight of debt.",
+  "The bank seizes your lands, your slaves, everything.",
+  "Foreclosure complete. You are cast out.",
+  "The moneylenders have won. Your kingdom falls.",
+  "Debt is the destroyer of kings. You are foreclosed.",
+  "The bank takes possession. Your reign ends here."
+];
+
+const bankruptcyMessages = [
+  "The party's over.",
+  "Bankruptcy! You cannot even afford an emergency loan.",
+  "Total financial ruin. There is no way out.",
+  "You are bankrupt. The game is over.",
+  "Not even the most desperate lender will help you now.",
+  "Bankruptcy declared. Your reign ends in disgrace.",
+  "You have nothing left. The kingdom falls.",
+  "The coffers are empty and no one will lend to you.",
+  "Bankrupt! The gods turn their backs on you.",
+  "Financial oblivion. There is no recovery from this."
+];
+
+const foreclosureWarningMessages = [
+  "The banker warns: your debt ratio is dangerously high.",
+  "Warning! You are approaching foreclosure territory.",
+  "The bank is watching your debt levels closely.",
+  "Careful! Your debt-to-asset ratio concerns the bank.",
+  "The moneylenders are sharpening their quills. Beware.",
+  "A warning from the bank: reduce your debt or face consequences.",
+  "Your financial situation is precarious. The bank is nervous.",
+  "The bankers whisper among themselves about your debts.",
+  "Debt warning: you are nearing the foreclosure threshold.",
+  "The bank sends a stern reminder about your obligations.",
+  "Your credit standing is deteriorating rapidly.",
+  "The banker frowns at your balance sheet. A warning.",
+  "Reduce your debt now or face foreclosure.",
+  "The bank issues a formal warning about your debt levels.",
+  "You are skating on thin financial ice."
+];
+
+const loanInputErrorMessages = [
+  "This is a bank. We do things right. Now you try.",
+  "The banker cannot read your writing. Try numbers.",
+  "Gold is measured in numbers, not hieroglyphics.",
+  "The scribes at the bank demand proper numbers.",
+  "Invalid input. The bank only deals in numbers."
+];
+
+const loanNoFunctionSelectedMessages = [
+  "Would you like to borrow or repay?",
+  "The banker waits. Borrow or repay?",
+  "Choose an action: borrow or repay.",
+  "The bank offers borrowing and repayment. Pick one.",
+  "Select borrow or repay before entering an amount."
+];
+
+const loanInsufficientRepaymentMessages = [
+  "You do not have enough gold to make that repayment.",
+  "Your coffers are too light for that payment.",
+  "Insufficient funds for repayment.",
+  "You cannot repay more than you possess.",
+  "The banker points to your empty purse. Not enough."
+];
+
 function getSupplyLimitMessage(rng, amount) {
   const template = pick(rng, supplyLimitMessages);
   return template.replace('%.0f', Math.floor(amount).toString());
@@ -318,6 +481,55 @@ function getNoFunctionSelectedMessage(rng) {
   return pick(rng, noFunctionSelectedMessages);
 }
 
+function getCreditCheckFeeMessage(rng, fee) {
+  const template = pick(rng, creditCheckFeeMessages);
+  return template.replace('%.0f', Math.floor(fee).toString());
+}
+
+function getLoanApprovalMessage(rng, amount, rate) {
+  const template = pick(rng, loanApprovalMessages);
+  return template.replace('%.0f', Math.floor(amount).toString())
+    .replace('%.2f%%', rate.toFixed(2) + '%');
+}
+
+function getLoanDenialMessage(rng) {
+  return pick(rng, loanDenialMessages);
+}
+
+function getLoanRepaymentMessage(rng) {
+  const msg = pick(rng, loanRepaymentMessages);
+  const signoff = pick(rng, loanRepaymentSignoffMessages);
+  return msg + ' ' + signoff;
+}
+
+function getCashShortageMessage(rng) {
+  return pick(rng, cashShortageMessages);
+}
+
+function getForeclosureMessage(rng) {
+  return pick(rng, foreclosureMessages);
+}
+
+function getBankruptcyMessage(rng) {
+  return pick(rng, bankruptcyMessages);
+}
+
+function getForeclosureWarningMessage(rng) {
+  return pick(rng, foreclosureWarningMessages);
+}
+
+function getLoanInputErrorMessage(rng) {
+  return pick(rng, loanInputErrorMessages);
+}
+
+function getLoanNoFunctionSelectedMessage(rng) {
+  return pick(rng, loanNoFunctionSelectedMessages);
+}
+
+function getLoanInsufficientRepaymentMessage(rng) {
+  return pick(rng, loanInsufficientRepaymentMessages);
+}
+
 module.exports = {
   openingMessages, getOpeningMessage,
   winMessages, farewellMessages,
@@ -339,5 +551,16 @@ module.exports = {
   insufficientFundsMessages, getInsufficientFundsMessage,
   sellMoreThanOwnedMessages, getSellMoreThanOwnedMessage,
   tradingInputErrorMessages, getTradingInputErrorMessage,
-  noFunctionSelectedMessages, getNoFunctionSelectedMessage
+  noFunctionSelectedMessages, getNoFunctionSelectedMessage,
+  creditCheckFeeMessages, getCreditCheckFeeMessage,
+  loanApprovalMessages, getLoanApprovalMessage,
+  loanDenialMessages, getLoanDenialMessage,
+  loanRepaymentMessages, loanRepaymentSignoffMessages, getLoanRepaymentMessage,
+  cashShortageMessages, getCashShortageMessage,
+  foreclosureMessages, getForeclosureMessage,
+  bankruptcyMessages, getBankruptcyMessage,
+  foreclosureWarningMessages, getForeclosureWarningMessage,
+  loanInputErrorMessages, getLoanInputErrorMessage,
+  loanNoFunctionSelectedMessages, getLoanNoFunctionSelectedMessage,
+  loanInsufficientRepaymentMessages, getLoanInsufficientRepaymentMessage
 };

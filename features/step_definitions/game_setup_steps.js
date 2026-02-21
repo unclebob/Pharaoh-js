@@ -181,8 +181,10 @@ Then('the pyramid height should be {int}', function (expected) {
 
 Given('the player has {int} gold', function (amount) {
   this.state.gold = amount;
-  // Need a credit limit to borrow; set easy difficulty
-  this.selectDifficulty('Easy');
+  // Set easy difficulty only if not already configured
+  if (this.state.screen === 'difficulty') {
+    this.selectDifficulty('Easy');
+  }
 });
 
 When('the player borrows from the bank', function () {
@@ -238,6 +240,9 @@ Then('the screen is updated with new values', function () {
 When('a month is simulated', function () {
   this.prevGold = this.state.gold;
   this.prevPyramidStones = this.state.pyramidStones;
+  this.prevCreditRating = this.state.creditRating;
+  this.prevInterestAddition = this.state.interestAddition;
+  this.prevLoan = this.state.loan;
   this.stonesAdded = addStones(this.state);
   this.runMonth();
 });
