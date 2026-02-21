@@ -173,6 +173,8 @@ Then('max work per slave = {float} * {float} * {float} = {float}',
 
 Given('slave health is {float}', function (h) {
   this.state.slaveHealth = h;
+  this.currentAnimal = 'slave';
+  this.currentHealth = h;
 });
 
 When('work ability is calculated', function () {
