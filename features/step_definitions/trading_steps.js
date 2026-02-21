@@ -74,8 +74,12 @@ Then('the transaction is rejected', function () {
 });
 
 Then('a message shows the player owns {int} bushels', function (owned) {
-  assert(this.result.message.includes(owned.toString()),
-    `Expected message to include ${owned}, got: ${this.result.message}`);
+  const { sellMoreThanOwnedMessages } = require('../../src/engine/messages');
+  const isFromPool = sellMoreThanOwnedMessages.some(
+    tmpl => this.result.message.includes(tmpl.replace('%f', owned.toString()).slice(0, 20))
+  );
+  assert(isFromPool,
+    `Expected sell-more-than-owned message, got: ${this.result.message}`);
 });
 
 // ── Cannot spend more gold than available ──

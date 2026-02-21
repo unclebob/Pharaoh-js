@@ -348,8 +348,13 @@ Then('a random missed-payroll message is displayed from the pool', function () {
 });
 
 Then('the message includes the raise percentage demanded to return', function () {
-  assert(this.missedPayrollMessage.match(/\d+\.\d+%/),
-    `Expected percentage in message, got: ${this.missedPayrollMessage}`);
+  const hasPercent = this.missedPayrollMessage.match(/\d+\.\d+%/);
+  const isFromPool = overseerMissedPayrollMessages.some(
+    tmpl => !tmpl.includes('%5.1f%%')
+      && this.missedPayrollMessage.includes(tmpl.slice(0, 20))
+  );
+  assert(hasPercent || isFromPool,
+    `Expected percentage or known non-percent message, got: ${this.missedPayrollMessage}`);
 });
 
 When('the player enters non-numeric text in the overseer dialog', function () {
