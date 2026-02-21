@@ -1,0 +1,3 @@
+- This project will begin with an initial specification and a set of features.
+- Walk through the features one at a time.  Walk through the scenarios one at a time.  Ensure each scenario fails.  Then use the three rules of TDD to make the scenario pass.
+- Never allow a scenario to be a no-op.  Every scenario must test the specified behavior.  You must see it fail.  You must write unit tests that fail for the same reason.  You must make those unit tests pass by implementing the specified behavior.  The scenario will only pass when all the unit tests of that behavior pass.
