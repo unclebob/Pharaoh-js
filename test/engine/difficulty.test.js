@@ -1,6 +1,6 @@
 'use strict';
 
-const { setDifficulty } = require('../../src/engine/difficulty');
+const { setDifficulty, forceEasyIfUnlicensed } = require('../../src/engine/difficulty');
 const { createGameState } = require('../../src/engine/state');
 
 describe('difficulty', () => {
@@ -54,6 +54,28 @@ describe('difficulty', () => {
       expect(state.screen).toBe('difficulty');
       setDifficulty(state, 'easy');
       expect(state.screen).toBe('game');
+    });
+  });
+
+  describe('forceEasyIfUnlicensed', () => {
+    it('sets easy difficulty when unlicensed', () => {
+      state.licensed = false;
+      forceEasyIfUnlicensed(state);
+      expect(state.pyramidBase).toBeCloseTo(115.47);
+      expect(state.creditLimit).toBe(5000000);
+    });
+
+    it('disables saving when unlicensed', () => {
+      state.licensed = false;
+      forceEasyIfUnlicensed(state);
+      expect(state.canSave).toBe(false);
+    });
+
+    it('does nothing when licensed', () => {
+      state.licensed = true;
+      forceEasyIfUnlicensed(state);
+      expect(state.pyramidBase).toBe(0);
+      expect(state.canSave).toBe(true);
     });
   });
 });

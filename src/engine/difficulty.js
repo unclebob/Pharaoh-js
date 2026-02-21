@@ -20,4 +20,11 @@ function setDifficulty(state, level) {
   state.screen = 'game';
 }
 
-module.exports = { setDifficulty };
+function forceEasyIfUnlicensed(state) {
+  if (!state.licensed) {
+    setDifficulty(state, 'easy');
+    state.canSave = false;
+  }
+}
+
+module.exports = { setDifficulty, forceEasyIfUnlicensed, SETTINGS };
