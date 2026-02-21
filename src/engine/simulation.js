@@ -1,6 +1,7 @@
 'use strict';
 
 const { nextRaw } = require('./random');
+const { payOverseers } = require('./overseers');
 
 function snapshotPrev(state) {
   return {
@@ -27,6 +28,7 @@ function checkRandomEvent(state) {
 
 function simulateMonth(state) {
   state.prev = snapshotPrev(state);
+  payOverseers(state);
   checkRandomEvent(state);
   advanceMonth(state);
   return state;

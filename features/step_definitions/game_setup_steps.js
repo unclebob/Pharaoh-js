@@ -236,6 +236,7 @@ Then('the screen is updated with new values', function () {
 });
 
 When('a month is simulated', function () {
+  this.prevGold = this.state.gold;
   this.prevPyramidStones = this.state.pyramidStones;
   this.stonesAdded = addStones(this.state);
   this.runMonth();

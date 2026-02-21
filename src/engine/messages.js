@@ -111,6 +111,41 @@ const negativeFertilizerErrorMessages = [
   "Removing fertilizer is not how farming works."
 ];
 
+const overseerMissedPayrollMessages = [
+  "Your overseers have quit! They demand a %5.1f%% raise to return.",
+  "No gold, no overseers. They want %5.1f%% more to come back.",
+  "The overseers have abandoned their posts. A %5.1f%% raise might lure them back.",
+  "Unpaid overseers are angry overseers. They demand %5.1f%% more pay.",
+  "Your overseers want a %5.1f%% raise. You missed their payroll.",
+  "The overseers refuse to work for free. They demand a %5.1f%% increase.",
+  "All overseers have left! They will only return for %5.1f%% more gold.",
+  "Missed payroll! The overseers demand %5.1f%% more to forgive you."
+];
+
+const overseerInputErrorMessages = [
+  "Hire or fire. Hey, that rhymes!",
+  "The overseer captain cannot understand your orders.",
+  "Numbers, great Pharaoh. Overseers are counted in numbers.",
+  "The scribes cannot interpret that as an overseer command.",
+  "Even the overseers are confused by that input."
+];
+
+const overseerFractionalErrorMessages = [
+  "That is likely to be a bloody operation.",
+  "Half an overseer? That would be messy.",
+  "We cannot split an overseer in two, great Pharaoh.",
+  "Overseers come in whole numbers, not fractions.",
+  "Fractional overseers? The physicians advise against it."
+];
+
+const overseerFireTooManyMessages = [
+  "You cannot fire overseers you do not have.",
+  "There are not that many overseers to dismiss.",
+  "You would fire more than you employ? Impossible.",
+  "The overseer captain reports insufficient men to dismiss.",
+  "We do not have that many overseers, great Pharaoh."
+];
+
 function getOpeningMessage(rng) {
   const face = randomInt(rng, 0, 4);
   const text = pick(rng, openingMessages);
@@ -153,6 +188,23 @@ function getNegativeFertilizerErrorMessage(rng) {
   return pick(rng, negativeFertilizerErrorMessages);
 }
 
+function getOverseerMissedPayrollMessage(rng, raisePercent) {
+  const template = pick(rng, overseerMissedPayrollMessages);
+  return template.replace('%5.1f%%', raisePercent.toFixed(1) + '%');
+}
+
+function getOverseerInputErrorMessage(rng) {
+  return pick(rng, overseerInputErrorMessages);
+}
+
+function getOverseerFractionalErrorMessage(rng) {
+  return pick(rng, overseerFractionalErrorMessages);
+}
+
+function getOverseerFireTooManyMessage(rng) {
+  return pick(rng, overseerFireTooManyMessages);
+}
+
 module.exports = {
   openingMessages, getOpeningMessage,
   winMessages, farewellMessages,
@@ -162,6 +214,10 @@ module.exports = {
   negativePlantingErrorMessages, getNegativePlantingErrorMessage,
   fertilizerErrorMessages, getFertilizerErrorMessage,
   negativeFertilizerErrorMessages, getNegativeFertilizerErrorMessage,
+  overseerMissedPayrollMessages, getOverseerMissedPayrollMessage,
+  overseerInputErrorMessages, getOverseerInputErrorMessage,
+  overseerFractionalErrorMessages, getOverseerFractionalErrorMessage,
+  overseerFireTooManyMessages, getOverseerFireTooManyMessage,
   getWinMessage, getFarewellMessage,
   getPyramidErrorMessage, getNegativePyramidErrorMessage
 };
