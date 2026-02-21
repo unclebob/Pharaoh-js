@@ -31,7 +31,7 @@ function createGameState(seed) {
     neighbors: { goodGuy: 0, badGuy: 1, villageIdiot: 2, banker: 3 },
     prev: {},
     temporaryWorkAddition: 0,
-    slaveEfficiency: 1.0,
+    slaveEfficiency: 1.0, motivation: 1.0, oxenEfficiency: 1.0,
     rng: createRandom(seed),
     gameOver: false, gameWon: false, licensed: true, canSave: true
   };
