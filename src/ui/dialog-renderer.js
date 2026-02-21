@@ -20,8 +20,14 @@ var PharaohDialogRenderer = (function () {
   var DIFF_BG = 'rgb(30,30,60)';
   var GOLD_COLOR = 'rgb(255,215,0)';
 
-  // Face placeholder colors for face 0-3
+  // ── Preload face images ──
+  var FACE_IMAGES = [];
   var FACE_COLORS = ['#e8c170', '#a0c8e0', '#c8e0a0', '#e0a0a0'];
+  for (var fi = 0; fi < 4; fi++) {
+    var img = new Image();
+    img.src = 'resources/faces/man' + (fi + 1) + '.png';
+    FACE_IMAGES.push(img);
+  }
 
   // ── Rounded rectangle ──
 
@@ -39,36 +45,20 @@ var PharaohDialogRenderer = (function () {
     ctx.closePath();
   }
 
-  // ── Draw face placeholder ──
+  // ── Draw face ──
 
   function drawFace(ctx, x, y, size, faceIndex) {
     var idx = (faceIndex || 0) % 4;
-    ctx.fillStyle = FACE_COLORS[idx];
-    ctx.fillRect(x, y, size, size);
-    ctx.strokeStyle = '#666';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x, y, size, size);
-    // Draw eyes and mouth
-    var cx = x + size / 2;
-    var cy = y + size / 2;
-    ctx.fillStyle = '#333';
-    ctx.beginPath();
-    ctx.arc(cx - size * 0.15, cy - size * 0.1, size * 0.05, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cx + size * 0.15, cy - size * 0.1, size * 0.05, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cx, cy + size * 0.15, size * 0.12, 0, Math.PI);
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    // Face number label
-    ctx.fillStyle = '#333';
-    ctx.font = '10px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText('Face ' + (idx + 1), cx, y + size - 2);
+    var img = FACE_IMAGES[idx];
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.drawImage(img, x, y, size, size);
+    } else {
+      ctx.fillStyle = FACE_COLORS[idx];
+      ctx.fillRect(x, y, size, size);
+      ctx.strokeStyle = '#666';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, size, size);
+    }
   }
 
   // ── Draw icon placeholder ──

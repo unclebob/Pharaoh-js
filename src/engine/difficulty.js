@@ -3,7 +3,12 @@
 const SETTINGS = {
   easy: {
     pyramidBase: 115.47, creditLimit: 5000000, creditLowerBound: 5000000,
-    worldGrowth: 0.15, landPrice: 1000, wheatPrice: 10, slavePrice: 1000
+    worldGrowth: 0.15, landPrice: 1000, wheatPrice: 10, slavePrice: 1000,
+    fallow: 80, slaves: 100, oxen: 50, horses: 7,
+    wheat: 20000, manure: 400, overseers: 7,
+    slaveFeedRate: 10, oxenFeedRate: 70, horseFeedRate: 55,
+    plantingQuota: 10, manureSpreadQuota: 50,
+    loan: 433200, gold: 40000
   },
   normal: {
     pyramidBase: 346.41, creditLimit: 500000, creditLowerBound: 500000,

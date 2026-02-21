@@ -160,7 +160,21 @@ var PharaohEngine = (() => {
           worldGrowth: 0.15,
           landPrice: 1e3,
           wheatPrice: 10,
-          slavePrice: 1e3
+          slavePrice: 1e3,
+          fallow: 80,
+          slaves: 100,
+          oxen: 50,
+          horses: 7,
+          wheat: 2e4,
+          manure: 400,
+          overseers: 7,
+          slaveFeedRate: 10,
+          oxenFeedRate: 70,
+          horseFeedRate: 55,
+          plantingQuota: 10,
+          manureSpreadQuota: 50,
+          loan: 433200,
+          gold: 4e4
         },
         normal: {
           pyramidBase: 346.41,

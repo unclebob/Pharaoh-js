@@ -130,7 +130,7 @@ Then('the sale is capped at the maximum the market will absorb', function () {
 
 Given('the player has {int} slaves', function (count) {
   this.state.slaves = count;
-  this.state.gold = this.state.gold || 1000000;
+  this.state.gold = Math.max(this.state.gold, 1000000);
   this.state.slavePrice = this.state.slavePrice || 1000;
   this.state.supply.slave = Math.max(this.state.supply.slave || 0, 10000);
   this.state.demand.slave = Math.max(this.state.demand.slave || 0, 10000);

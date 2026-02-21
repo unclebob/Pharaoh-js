@@ -28,12 +28,13 @@ var PharaohApp = (function () {
 
     setupEventListeners();
     showOpeningMessage();
+    scheduleRender();
     requestAnimationFrame(gameLoop);
   }
 
   function showOpeningMessage() {
-    var text = E.messages.getOpeningMessage(state.rng);
-    state.faceMessage = { face: 0, text: text };
+    var msg = E.messages.getOpeningMessage(state.rng);
+    state.faceMessage = msg;
   }
 
   // ── Event Listeners ──

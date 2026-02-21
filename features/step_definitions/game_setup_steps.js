@@ -188,6 +188,7 @@ Given('the player has {int} gold', function (amount) {
 });
 
 When('the player borrows from the bank', function () {
+  this.prevLoan = this.state.loan;
   this.borrowFromBank();
 });
 
@@ -196,7 +197,7 @@ Then('the player should receive gold', function () {
 });
 
 Then('the loan balance should increase by the borrowed amount', function () {
-  assert.strictEqual(this.state.loan, this.borrowedAmount);
+  assert.strictEqual(this.state.loan - this.prevLoan, this.borrowedAmount);
   assert(this.borrowedAmount > 0, 'Expected a positive borrow amount');
 });
 

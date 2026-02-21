@@ -34,7 +34,11 @@ describe('loans', () => {
     });
 
     it('returns negative when debt exceeds assets', () => {
-      const state = makeState({ gold: 100, loan: 10000 });
+      const state = makeState({
+        gold: 100, loan: 10000,
+        slaves: 0, oxen: 0, horses: 0, wheat: 0, manure: 0,
+        fallow: 0, planted: 0, growing: 0, ripe: 0
+      });
       expect(calculateRealNetWorth(state)).toBeLessThan(0);
     });
   });
