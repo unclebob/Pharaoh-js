@@ -1,0 +1,22 @@
+{
+  "name": "pharaoh",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "jest --coverage",
+    "features": "cucumber-js",
+    "test:all": "npm test && npm run features"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@cucumber/cucumber": "^12.6.0",
+    "jest": "^30.2.0"
+  }
+}
