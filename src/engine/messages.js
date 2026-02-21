@@ -71,6 +71,14 @@ const negativePyramidErrorMessages = [
   "A negative pyramid? That would be a hole in the ground!"
 ];
 
+const feedRateErrorMessages = [
+  "Feed rates are odd things. They have to be numeric.",
+  "The scribes cannot interpret that as a number, great Pharaoh.",
+  "Even the oxen know that is not a valid number.",
+  "Numbers, oh Pharaoh. The feed rate must be a number.",
+  "The horses whinny in confusion. Please enter a proper number."
+];
+
 function getOpeningMessage(rng) {
   const face = randomInt(rng, 0, 4);
   const text = pick(rng, openingMessages);
@@ -93,10 +101,15 @@ function getNegativePyramidErrorMessage(rng) {
   return pick(rng, negativePyramidErrorMessages);
 }
 
+function getFeedRateErrorMessage(rng) {
+  return pick(rng, feedRateErrorMessages);
+}
+
 module.exports = {
   openingMessages, getOpeningMessage,
   winMessages, farewellMessages,
   pyramidErrorMessages, negativePyramidErrorMessages,
+  feedRateErrorMessages, getFeedRateErrorMessage,
   getWinMessage, getFarewellMessage,
   getPyramidErrorMessage, getNegativePyramidErrorMessage
 };

@@ -4,6 +4,7 @@ const {
   openingMessages, getOpeningMessage,
   winMessages, farewellMessages,
   pyramidErrorMessages, negativePyramidErrorMessages,
+  feedRateErrorMessages, getFeedRateErrorMessage,
   getWinMessage, getFarewellMessage,
   getPyramidErrorMessage, getNegativePyramidErrorMessage
 } = require('../../src/engine/messages');
@@ -129,6 +130,26 @@ describe('messages', () => {
     it('returns a string from the negative pyramid error pool', () => {
       const rng = createRandom(42);
       expect(negativePyramidErrorMessages).toContain(getNegativePyramidErrorMessage(rng));
+    });
+  });
+
+  describe('feedRateErrorMessages', () => {
+    it('has at least 5 entries', () => {
+      expect(feedRateErrorMessages.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('every entry is a non-empty string', () => {
+      feedRateErrorMessages.forEach(m => {
+        expect(typeof m).toBe('string');
+        expect(m.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  describe('getFeedRateErrorMessage', () => {
+    it('returns a string from the feed rate error pool', () => {
+      const rng = createRandom(42);
+      expect(feedRateErrorMessages).toContain(getFeedRateErrorMessage(rng));
     });
   });
 });
