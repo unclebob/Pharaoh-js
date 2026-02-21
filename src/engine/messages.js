@@ -205,6 +205,119 @@ function getOverseerFireTooManyMessage(rng) {
   return pick(rng, overseerFireTooManyMessages);
 }
 
+const supplyLimitMessages = [
+  "I am afraid I can't accept any more than %.0f.",
+  "The market is glutted! I can only take %.0f at most.",
+  "My warehouses are bursting. %.0f is the absolute maximum.",
+  "Supply exceeds demand. I'll buy no more than %.0f.",
+  "The traders refuse more than %.0f units. The market is saturated.",
+  "Too much on the market already. %.0f is all I can absorb.",
+  "I would be a fool to accept more than %.0f.",
+  "My storerooms can handle %.0f and not a single unit more.",
+  "The merchants' guild limits me to %.0f.",
+  "Alas, the demand allows me to accept only %.0f."
+];
+
+const demandLimitMessages = [
+  "I am afraid that I can only spare %.0f.",
+  "There are only %.0f available in the market.",
+  "My supplies are running low. I have just %.0f left.",
+  "The warehouses hold only %.0f. Take it or leave it.",
+  "You ask for too much! I have but %.0f to sell.",
+  "The caravans brought only %.0f this season.",
+  "Supplies are scarce. %.0f is all there is.",
+  "The market can only provide %.0f right now.",
+  "After the last drought, only %.0f remain in stock.",
+  "I wish I had more, but %.0f is all I can offer."
+];
+
+const transactionSuccessMessages = [
+  "Thank you for buying my quality merchandise.",
+  "A fine transaction! May it bring you prosperity.",
+  "The deal is done. Pleasure doing business with you.",
+  "Excellent! The goods are yours, great Pharaoh.",
+  "A wise purchase. The gods smile on this trade.",
+  "Done and done! May your granaries overflow.",
+  "The merchants bow. The transaction is complete.",
+  "A fair deal for both sides. Until next time!",
+  "The scribes have recorded the transaction.",
+  "May this trade bring fortune to your kingdom."
+];
+
+const insufficientFundsMessages = [
+  "You only have the cash for %.0f.",
+  "Your coffers are too light! You can afford only %.0f.",
+  "The treasury is insufficient. Maximum purchase: %.0f.",
+  "Your gold runs short. You can buy no more than %.0f.",
+  "The banker shakes his head. You can afford %.0f at best.",
+  "Not enough gold, great Pharaoh. You may buy up to %.0f.",
+  "Your purse is too thin for that. Maximum: %.0f.",
+  "The merchants demand payment. You can only cover %.0f.",
+  "Alas, your wealth allows for only %.0f.",
+  "The scribes report insufficient funds. Maximum affordable: %.0f."
+];
+
+const sellMoreThanOwnedMessages = [
+  "You only have %f to sell.",
+  "Your stores hold just %f. You cannot sell what you do not own.",
+  "The scribes report you possess merely %f.",
+  "You cannot sell more than the %f you have.",
+  "Impossible! Your inventory shows only %f."
+];
+
+const tradingInputErrorMessages = [
+  "The scribes cannot make sense of your trading orders.",
+  "Buy or sell, great Pharaoh, but use numbers please!",
+  "The merchants are confused by your gibberish.",
+  "That is not a valid trading command.",
+  "Numbers! The market deals in numbers, not riddles.",
+  "The traders scratch their heads at your request.",
+  "Even the camels look confused by that input.",
+  "Please enter a proper amount for the trade.",
+  "The market does not accept hieroglyphic nonsense.",
+  "Try again with an actual number, oh great Pharaoh."
+];
+
+const noFunctionSelectedMessages = [
+  "You must choose to buy or sell first.",
+  "Select a trading action before entering amounts.",
+  "The merchants await your decision: buy or sell?",
+  "No action selected. What would you like to do?",
+  "First decide whether to buy or sell, great Pharaoh."
+];
+
+function getSupplyLimitMessage(rng, amount) {
+  const template = pick(rng, supplyLimitMessages);
+  return template.replace('%.0f', Math.floor(amount).toString());
+}
+
+function getDemandLimitMessage(rng, amount) {
+  const template = pick(rng, demandLimitMessages);
+  return template.replace('%.0f', Math.floor(amount).toString());
+}
+
+function getTransactionSuccessMessage(rng) {
+  return pick(rng, transactionSuccessMessages);
+}
+
+function getInsufficientFundsMessage(rng, maxAffordable) {
+  const template = pick(rng, insufficientFundsMessages);
+  return template.replace('%.0f', Math.floor(maxAffordable).toString());
+}
+
+function getSellMoreThanOwnedMessage(rng, owned) {
+  const template = pick(rng, sellMoreThanOwnedMessages);
+  return template.replace('%f', owned.toString());
+}
+
+function getTradingInputErrorMessage(rng) {
+  return pick(rng, tradingInputErrorMessages);
+}
+
+function getNoFunctionSelectedMessage(rng) {
+  return pick(rng, noFunctionSelectedMessages);
+}
+
 module.exports = {
   openingMessages, getOpeningMessage,
   winMessages, farewellMessages,
@@ -219,5 +332,12 @@ module.exports = {
   overseerFractionalErrorMessages, getOverseerFractionalErrorMessage,
   overseerFireTooManyMessages, getOverseerFireTooManyMessage,
   getWinMessage, getFarewellMessage,
-  getPyramidErrorMessage, getNegativePyramidErrorMessage
+  getPyramidErrorMessage, getNegativePyramidErrorMessage,
+  supplyLimitMessages, getSupplyLimitMessage,
+  demandLimitMessages, getDemandLimitMessage,
+  transactionSuccessMessages, getTransactionSuccessMessage,
+  insufficientFundsMessages, getInsufficientFundsMessage,
+  sellMoreThanOwnedMessages, getSellMoreThanOwnedMessage,
+  tradingInputErrorMessages, getTradingInputErrorMessage,
+  noFunctionSelectedMessages, getNoFunctionSelectedMessage
 };
