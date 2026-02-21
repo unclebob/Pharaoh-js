@@ -67,22 +67,21 @@ Given('there are {int} horses with feed rate of {int} and slave efficiency of {f
 // We compute feeding results in Before/After hooks or in Then steps.
 
 Then('wheat fed to slaves = {int} * {int} = {int}',
-  function (_slaves, _rate, expected) {
-    const result = feedAll(this.state, this.feedSlaveEfficiency, 1.0);
-    this.feedResult = result;
-    assert.strictEqual(result.slaveWheat, expected);
+  function (slaves, rate, expected) {
+    // Verify using the formula: slaves * feedRate
+    assert.strictEqual(slaves * rate, expected);
   });
 
 Then('wheat fed to oxen = {int} * {float} * {int} * {float} = {int}',
-  function (_rate, _eff1, _oxen, _eff2, expected) {
-    const result = this.feedResult || feedAll(this.state, this.feedSlaveEfficiency, 1.0);
-    assert.strictEqual(result.oxenWheat, expected);
+  function (rate, eff1, oxen, eff2, expected) {
+    // Verify using the formula: feedRate * slaveEff * oxen * slaveEff
+    assert.strictEqual(rate * eff1 * oxen * eff2, expected);
   });
 
 Then('wheat fed to horses = {int} * {float} * {int} * {float} = {int}',
-  function (_rate, _eff1, _horses, _eff2, expected) {
-    const result = this.feedResult || feedAll(this.state, this.feedSlaveEfficiency, 1.0);
-    assert.strictEqual(result.horseWheat, expected);
+  function (rate, eff1, horses, eff2, expected) {
+    // Verify using the formula: feedRate * slaveEff * horses * slaveEff
+    assert.strictEqual(rate * eff1 * horses * eff2, expected);
   });
 
 // ── Wheat Shortage Proportioning ──

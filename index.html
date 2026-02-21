@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pharaoh</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: monospace;
+    }
+    #game-canvas {
+      border: 2px solid #555;
+      background: #fff;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game-canvas" width="1024" height="768"></canvas>
+
+  <!-- Engine bundle (built by esbuild from src/engine/) -->
+  <script src="dist/engine-bundle.js"></script>
+
+  <!-- UI layer -->
+  <script src="src/ui/renderer.js"></script>
+  <script src="src/ui/dialog-renderer.js"></script>
+  <script src="src/ui/input.js"></script>
+  <script src="src/ui/app.js"></script>
+</body>
+</html>

@@ -243,8 +243,15 @@ When('a month is simulated', function () {
   this.prevCreditRating = this.state.creditRating;
   this.prevInterestAddition = this.state.interestAddition;
   this.prevLoan = this.state.loan;
-  this.stonesAdded = addStones(this.state);
+  this.prevSlaveEfficiency = this.state.slaveEfficiency;
+  this.prevWheat = this.state.wheat;
+  this.prevManure = this.state.manure;
+  this.prevSlaves = this.state.slaves;
+  this.prevWheatRipe = this.state.wheatRipe;
+  this.prevFallow = this.state.fallow;
+  this.prevPlanted = this.state.planted;
   this.runMonth();
+  this.stonesAdded = this.state.pyramidStones - this.prevPyramidStones;
 });
 
 Then('a random event occurs with probability 12.5%', function () {

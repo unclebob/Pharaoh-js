@@ -92,6 +92,7 @@ Given('the pyramid quota is {int}', function (quota) {
 
 Given('slave efficiency is {float}', function (eff) {
   this.state.slaveEfficiency = eff;
+  this.state.slaveEfficiencyOverride = eff;
 });
 
 Then('stones added = {int} * {float} = {int}', function (_quota, _eff, expected) {

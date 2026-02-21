@@ -301,19 +301,19 @@ Then('all activities are reduced to {int}%', function (pct) {
 // ── Proportional Reduction on Activities ──
 
 Then('planting rate is reduced to {int}%', function (pct) {
-  const eff = this.state.slaveEfficiency;
+  const eff = this.prevSlaveEfficiency || this.state.slaveEfficiency;
   assert(Math.abs(eff - pct / 100) < 0.001,
     `Expected efficiency ${pct / 100}, got ${eff}`);
 });
 
 Then('harvest is {int}% of ripe wheat', function (pct) {
-  const eff = this.state.slaveEfficiency;
+  const eff = this.prevSlaveEfficiency || this.state.slaveEfficiency;
   assert(Math.abs(eff - pct / 100) < 0.001,
     `Expected efficiency ${pct / 100}, got ${eff}`);
 });
 
 Then('manure spread is reduced to {int}%', function (pct) {
-  const eff = this.state.slaveEfficiency;
+  const eff = this.prevSlaveEfficiency || this.state.slaveEfficiency;
   assert(Math.abs(eff - pct / 100) < 0.001,
     `Expected efficiency ${pct / 100}, got ${eff}`);
 });
@@ -326,12 +326,13 @@ Then('pyramid stones added is {int}% of quota', function (pct) {
     assert.strictEqual(added, expectedAdded);
   } else {
     // No quota set, just verify efficiency is correct
-    assert(Math.abs(this.state.slaveEfficiency - pct / 100) < 0.001);
+    const eff = this.prevSlaveEfficiency || this.state.slaveEfficiency;
+    assert(Math.abs(eff - pct / 100) < 0.001);
   }
 });
 
 Then('livestock feeding rates are reduced to {int}%', function (pct) {
-  const eff = this.state.slaveEfficiency;
+  const eff = this.prevSlaveEfficiency || this.state.slaveEfficiency;
   assert(Math.abs(eff - pct / 100) < 0.001,
     `Expected efficiency ${pct / 100}, got ${eff}`);
 });
