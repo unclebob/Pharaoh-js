@@ -5,6 +5,10 @@ const {
   winMessages, farewellMessages,
   pyramidErrorMessages, negativePyramidErrorMessages,
   feedRateErrorMessages, getFeedRateErrorMessage,
+  plantingErrorMessages, getPlantingErrorMessage,
+  negativePlantingErrorMessages, getNegativePlantingErrorMessage,
+  fertilizerErrorMessages, getFertilizerErrorMessage,
+  negativeFertilizerErrorMessages, getNegativeFertilizerErrorMessage,
   getWinMessage, getFarewellMessage,
   getPyramidErrorMessage, getNegativePyramidErrorMessage
 } = require('../../src/engine/messages');
@@ -150,6 +154,86 @@ describe('messages', () => {
     it('returns a string from the feed rate error pool', () => {
       const rng = createRandom(42);
       expect(feedRateErrorMessages).toContain(getFeedRateErrorMessage(rng));
+    });
+  });
+
+  describe('plantingErrorMessages', () => {
+    it('has at least 5 entries', () => {
+      expect(plantingErrorMessages.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('every entry is a non-empty string', () => {
+      plantingErrorMessages.forEach(m => {
+        expect(typeof m).toBe('string');
+        expect(m.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  describe('getPlantingErrorMessage', () => {
+    it('returns a string from the planting error pool', () => {
+      const rng = createRandom(42);
+      expect(plantingErrorMessages).toContain(getPlantingErrorMessage(rng));
+    });
+  });
+
+  describe('negativePlantingErrorMessages', () => {
+    it('has at least 5 entries', () => {
+      expect(negativePlantingErrorMessages.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('every entry is a non-empty string', () => {
+      negativePlantingErrorMessages.forEach(m => {
+        expect(typeof m).toBe('string');
+        expect(m.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  describe('getNegativePlantingErrorMessage', () => {
+    it('returns a string from the negative planting error pool', () => {
+      const rng = createRandom(42);
+      expect(negativePlantingErrorMessages).toContain(getNegativePlantingErrorMessage(rng));
+    });
+  });
+
+  describe('fertilizerErrorMessages', () => {
+    it('has at least 5 entries', () => {
+      expect(fertilizerErrorMessages.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('every entry is a non-empty string', () => {
+      fertilizerErrorMessages.forEach(m => {
+        expect(typeof m).toBe('string');
+        expect(m.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  describe('getFertilizerErrorMessage', () => {
+    it('returns a string from the fertilizer error pool', () => {
+      const rng = createRandom(42);
+      expect(fertilizerErrorMessages).toContain(getFertilizerErrorMessage(rng));
+    });
+  });
+
+  describe('negativeFertilizerErrorMessages', () => {
+    it('has at least 5 entries', () => {
+      expect(negativeFertilizerErrorMessages.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('every entry is a non-empty string', () => {
+      negativeFertilizerErrorMessages.forEach(m => {
+        expect(typeof m).toBe('string');
+        expect(m.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  describe('getNegativeFertilizerErrorMessage', () => {
+    it('returns a string from the negative fertilizer error pool', () => {
+      const rng = createRandom(42);
+      expect(negativeFertilizerErrorMessages).toContain(getNegativeFertilizerErrorMessage(rng));
     });
   });
 });

@@ -79,6 +79,38 @@ const feedRateErrorMessages = [
   "The horses whinny in confusion. Please enter a proper number."
 ];
 
+const plantingErrorMessages = [
+  "We are planting wheat, not alphabet soup.",
+  "The scribes cannot decipher your planting orders.",
+  "Even the seeds are confused by that input.",
+  "Numbers, great Pharaoh. Acres must be a number.",
+  "The farmers scratch their heads. Try a proper number."
+];
+
+const negativePlantingErrorMessages = [
+  "Negative wheat. Grows down eh?",
+  "We cannot un-plant what was never sown.",
+  "Negative acres? The land does not work that way.",
+  "The farmers refuse to plant in reverse.",
+  "Unplanting is not a thing, oh Pharaoh."
+];
+
+const fertilizerErrorMessages = [
+  "We are talking about fertilizer, measured in tons.",
+  "The scribes cannot read your manure orders.",
+  "Even the oxen know that is not a valid tonnage.",
+  "Numbers, great Pharaoh. Manure is measured in tons.",
+  "The farmers need a number for the fertilizer, not riddles."
+];
+
+const negativeFertilizerErrorMessages = [
+  "Negative fertilizer? Hey, maybe that's food!",
+  "We cannot un-spread the manure, oh Pharaoh.",
+  "Negative manure? The fields would be confused.",
+  "The farmers refuse to collect manure from the fields.",
+  "Removing fertilizer is not how farming works."
+];
+
 function getOpeningMessage(rng) {
   const face = randomInt(rng, 0, 4);
   const text = pick(rng, openingMessages);
@@ -105,11 +137,31 @@ function getFeedRateErrorMessage(rng) {
   return pick(rng, feedRateErrorMessages);
 }
 
+function getPlantingErrorMessage(rng) {
+  return pick(rng, plantingErrorMessages);
+}
+
+function getNegativePlantingErrorMessage(rng) {
+  return pick(rng, negativePlantingErrorMessages);
+}
+
+function getFertilizerErrorMessage(rng) {
+  return pick(rng, fertilizerErrorMessages);
+}
+
+function getNegativeFertilizerErrorMessage(rng) {
+  return pick(rng, negativeFertilizerErrorMessages);
+}
+
 module.exports = {
   openingMessages, getOpeningMessage,
   winMessages, farewellMessages,
   pyramidErrorMessages, negativePyramidErrorMessages,
   feedRateErrorMessages, getFeedRateErrorMessage,
+  plantingErrorMessages, getPlantingErrorMessage,
+  negativePlantingErrorMessages, getNegativePlantingErrorMessage,
+  fertilizerErrorMessages, getFertilizerErrorMessage,
+  negativeFertilizerErrorMessages, getNegativeFertilizerErrorMessage,
   getWinMessage, getFarewellMessage,
   getPyramidErrorMessage, getNegativePyramidErrorMessage
 };
