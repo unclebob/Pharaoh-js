@@ -6,6 +6,7 @@ const { setDifficulty, forceEasyIfUnlicensed, SETTINGS } = require('../../src/en
 const { simulateMonth } = require('../../src/engine/simulation');
 const { refreshOffers } = require('../../src/engine/contracts');
 const { openingMessages } = require('../../src/engine/messages');
+const { addStones } = require('../../src/engine/pyramid');
 
 const RESOURCE_MAP = {
   gold: 'gold', slaves: 'slaves', oxen: 'oxen', horses: 'horses',
@@ -204,6 +205,7 @@ Then('the player can now buy commodities', function () {
 // ── Monthly turn ──
 
 Given('the game is running', function () {
+  if (!this.state) this.initGame(42);
   this.selectDifficulty('Easy');
 });
 
@@ -234,6 +236,8 @@ Then('the screen is updated with new values', function () {
 });
 
 When('a month is simulated', function () {
+  this.prevPyramidStones = this.state.pyramidStones;
+  this.stonesAdded = addStones(this.state);
   this.runMonth();
 });
 

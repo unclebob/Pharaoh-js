@@ -34,10 +34,69 @@ const openingMessages = [
   "One day, you might just win this game. Maybe today."
 ];
 
+const winMessages = [
+  "Your pyramid is complete! Strike up the band.",
+  "The gods smile upon your monument. It is finished!",
+  "Behold! Your pyramid touches the sky!",
+  "A marvel of the ancient world stands before you!",
+  "The slaves rejoice! The pyramid is done!",
+  "Generations will gaze upon your creation in wonder.",
+  "You have built a monument to rival the gods themselves!",
+  "The pharaoh's dream is realized. The pyramid is complete!",
+  "History will remember this pyramid, and the pharaoh who built it.",
+  "From the desert sands rises your eternal monument!"
+];
+
+const farewellMessages = [
+  "Farewell, great Pharaoh. May your reign be eternal.",
+  "Go in peace, mighty ruler. Your legacy is assured.",
+  "The gods grant you safe passage to the afterlife.",
+  "Until we meet again in the land beyond the stars.",
+  "Your name shall be spoken for a thousand years."
+];
+
+const pyramidErrorMessages = [
+  "Stone dust has gotten into your fingers.",
+  "The scribes cannot read your writing.",
+  "Even the slaves are confused by that number.",
+  "The architects shake their heads in bewilderment.",
+  "Perhaps you should try using actual numbers, great Pharaoh."
+];
+
+const negativePyramidErrorMessages = [
+  "Negative stones? Ah you want me to remove stones!",
+  "We cannot un-build the pyramid, oh Pharaoh.",
+  "The slaves refuse to carry stones downhill.",
+  "Removing stones would anger the gods!",
+  "A negative pyramid? That would be a hole in the ground!"
+];
+
 function getOpeningMessage(rng) {
   const face = randomInt(rng, 0, 4);
   const text = pick(rng, openingMessages);
   return { face, text };
 }
 
-module.exports = { openingMessages, getOpeningMessage };
+function getWinMessage(rng) {
+  return pick(rng, winMessages);
+}
+
+function getFarewellMessage(rng) {
+  return pick(rng, farewellMessages);
+}
+
+function getPyramidErrorMessage(rng) {
+  return pick(rng, pyramidErrorMessages);
+}
+
+function getNegativePyramidErrorMessage(rng) {
+  return pick(rng, negativePyramidErrorMessages);
+}
+
+module.exports = {
+  openingMessages, getOpeningMessage,
+  winMessages, farewellMessages,
+  pyramidErrorMessages, negativePyramidErrorMessages,
+  getWinMessage, getFarewellMessage,
+  getPyramidErrorMessage, getNegativePyramidErrorMessage
+};

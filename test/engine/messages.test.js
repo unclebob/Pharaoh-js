@@ -1,6 +1,12 @@
 'use strict';
 
-const { openingMessages, getOpeningMessage } = require('../../src/engine/messages');
+const {
+  openingMessages, getOpeningMessage,
+  winMessages, farewellMessages,
+  pyramidErrorMessages, negativePyramidErrorMessages,
+  getWinMessage, getFarewellMessage,
+  getPyramidErrorMessage, getNegativePyramidErrorMessage
+} = require('../../src/engine/messages');
 const { createRandom } = require('../../src/engine/random');
 
 describe('messages', () => {
@@ -43,6 +49,86 @@ describe('messages', () => {
       const r1 = createRandom(42);
       const r2 = createRandom(42);
       expect(getOpeningMessage(r1)).toEqual(getOpeningMessage(r2));
+    });
+  });
+
+  describe('winMessages', () => {
+    it('has at least 10 entries', () => {
+      expect(winMessages.length).toBeGreaterThanOrEqual(10);
+    });
+
+    it('every entry is a non-empty string', () => {
+      winMessages.forEach(m => {
+        expect(typeof m).toBe('string');
+        expect(m.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  describe('getWinMessage', () => {
+    it('returns a string from the win pool', () => {
+      const rng = createRandom(42);
+      expect(winMessages).toContain(getWinMessage(rng));
+    });
+  });
+
+  describe('farewellMessages', () => {
+    it('has at least 5 entries', () => {
+      expect(farewellMessages.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('every entry is a non-empty string', () => {
+      farewellMessages.forEach(m => {
+        expect(typeof m).toBe('string');
+        expect(m.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  describe('getFarewellMessage', () => {
+    it('returns a string from the farewell pool', () => {
+      const rng = createRandom(42);
+      expect(farewellMessages).toContain(getFarewellMessage(rng));
+    });
+  });
+
+  describe('pyramidErrorMessages', () => {
+    it('has at least 5 entries', () => {
+      expect(pyramidErrorMessages.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('every entry is a non-empty string', () => {
+      pyramidErrorMessages.forEach(m => {
+        expect(typeof m).toBe('string');
+        expect(m.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  describe('getPyramidErrorMessage', () => {
+    it('returns a string from the pyramid error pool', () => {
+      const rng = createRandom(42);
+      expect(pyramidErrorMessages).toContain(getPyramidErrorMessage(rng));
+    });
+  });
+
+  describe('negativePyramidErrorMessages', () => {
+    it('has at least 5 entries', () => {
+      expect(negativePyramidErrorMessages.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('every entry is a non-empty string', () => {
+      negativePyramidErrorMessages.forEach(m => {
+        expect(typeof m).toBe('string');
+        expect(m.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  describe('getNegativePyramidErrorMessage', () => {
+    it('returns a string from the negative pyramid error pool', () => {
+      const rng = createRandom(42);
+      expect(negativePyramidErrorMessages).toContain(getNegativePyramidErrorMessage(rng));
     });
   });
 });
