@@ -108,11 +108,11 @@ var PharaohRenderer = (function () {
 
     var prev = state.prev || {};
     var items = [
-      { name: 'Wheat', cur: state.wheat, old: prev.wheat },
-      { name: 'Manure', cur: state.manure, old: prev.manure },
-      { name: 'Slaves', cur: state.slaves, old: prev.slaves },
-      { name: 'Horses', cur: state.horses, old: prev.horses },
-      { name: 'Oxen', cur: state.oxen, old: prev.oxen }
+      { name: 'Wheat (w)', cur: state.wheat, old: prev.wheat },
+      { name: 'Manure (m)', cur: state.manure, old: prev.manure },
+      { name: 'Slaves (s)', cur: state.slaves, old: prev.slaves },
+      { name: 'Horses (h)', cur: state.horses, old: prev.horses },
+      { name: 'Oxen (o)', cur: state.oxen, old: prev.oxen }
     ];
 
     for (var i = 0; i < items.length; i++) {
@@ -134,7 +134,7 @@ var PharaohRenderer = (function () {
       { name: 'Slaves', val: state.slavePrice },
       { name: 'Horses', val: state.horsePrice },
       { name: 'Oxen', val: state.oxenPrice },
-      { name: 'Land', val: state.landPrice }
+      { name: 'Land (l)', val: state.landPrice }
     ];
     for (var i = 0; i < items.length; i++) {
       var r = 1 + i;
@@ -148,9 +148,9 @@ var PharaohRenderer = (function () {
     // Rows 0-4, Cols 6-7
     drawSectionHeader(ctx, canvas, 'Feed Rates', 6, 8, 0);
     var items = [
-      { name: 'Slaves', val: state.slaveFeedRate },
-      { name: 'Oxen', val: state.oxenFeedRate },
-      { name: 'Horses', val: state.horseFeedRate }
+      { name: 'Slaves (S)', val: state.slaveFeedRate },
+      { name: 'Oxen (O)', val: state.oxenFeedRate },
+      { name: 'Horses (H)', val: state.horseFeedRate }
     ];
     for (var i = 0; i < items.length; i++) {
       var r = 1 + i;
@@ -173,18 +173,21 @@ var PharaohRenderer = (function () {
 
   function drawOverseers(ctx, canvas, state) {
     // Rows 4-7, Cols 6-7
-    drawSectionHeader(ctx, canvas, 'Overseers', 6, 8, 4);
+    drawSectionHeader(ctx, canvas, 'Overseers (g)', 6, 8, 4);
     drawGridLine(ctx, canvas, 5, 6, 8);
     drawCell(ctx, canvas, "O'seers", 6, 5);
     drawCell(ctx, canvas, fmt(state.overseers), 7, 5, null, null, 'right');
     drawGridLine(ctx, canvas, 6, 6, 8);
     drawCell(ctx, canvas, 'Salary', 6, 6);
     drawCell(ctx, canvas, fmt(state.overseerPay), 7, 6, null, null, 'right');
+    drawGridLine(ctx, canvas, 7, 6, 8);
+    drawCell(ctx, canvas, 'Press', 6, 7);
+    drawCell(ctx, canvas, (state.overseerPressure || 0).toFixed(1), 7, 7, null, null, 'right');
   }
 
   function drawLoan(ctx, canvas, state) {
     // Rows 3-7, Cols 8-9
-    drawSectionHeader(ctx, canvas, 'Loan', 8, 10, 3);
+    drawSectionHeader(ctx, canvas, 'Loan (L)', 8, 10, 3);
     drawGridLine(ctx, canvas, 4, 8, 10);
     drawCell(ctx, canvas, 'Loan', 8, 4);
     drawCell(ctx, canvas, fmt(state.loan), 9, 4, null, null, 'right');
@@ -217,7 +220,7 @@ var PharaohRenderer = (function () {
 
   function drawSpreadPlant(ctx, canvas, state) {
     // Rows 8-10, Cols 6-7
-    drawSectionHeader(ctx, canvas, 'Spread&Plant', 6, 8, 8);
+    drawSectionHeader(ctx, canvas, 'Spread(f)&Plant(p)', 6, 8, 8);
     drawGridLine(ctx, canvas, 9, 6, 8);
     drawCell(ctx, canvas, 'Manure', 6, 9);
     drawCell(ctx, canvas, fmt(state.manureSpreadQuota), 7, 9, null, null, 'right');
@@ -240,7 +243,7 @@ var PharaohRenderer = (function () {
 
   function drawPyramid(ctx, canvas, state) {
     // Rows 11-23, Cols 0-3
-    drawSectionHeader(ctx, canvas, 'Pyramid', 0, 4, 11);
+    drawSectionHeader(ctx, canvas, 'Pyramid (q)', 0, 4, 11);
     drawGridLine(ctx, canvas, 12, 0, 4);
     drawCell(ctx, canvas, 'StoneQt', 0, 12);
     drawCell(ctx, canvas, fmt(state.stoneQuota), 1, 12, null, null, 'right');
@@ -288,7 +291,7 @@ var PharaohRenderer = (function () {
         if (state.contractOffers[i] && state.contractOffers[i].active) offerCount++;
       }
     }
-    drawSectionHeader(ctx, canvas, 'Contracts (pending) — Offers (' + offerCount + ')', 4, 10, 11);
+    drawSectionHeader(ctx, canvas, 'Contracts (c) — Offers (' + offerCount + ')', 4, 10, 11);
 
     var pending = state.pendingContracts || [];
     for (var j = 0; j < 12; j++) {
@@ -309,28 +312,69 @@ var PharaohRenderer = (function () {
     var r = 24;
     var y = cellY(canvas, r);
     var h = cellH(canvas);
+    var cw = cellW(canvas);
 
-    // Quit button
-    ctx.fillStyle = '#e0e0e0';
-    ctx.fillRect(cellX(canvas, 0), y, cellW(canvas), h);
+    // File menu button (col 0)
+    var fileBg = state._fileMenuOpen ? '#c0c8e0' : '#e0e0e0';
+    ctx.fillStyle = fileBg;
+    ctx.fillRect(cellX(canvas, 0), y, cw, h);
     ctx.strokeStyle = '#999';
     ctx.lineWidth = 1;
-    ctx.strokeRect(cellX(canvas, 0), y, cellW(canvas), h);
-    drawCell(ctx, canvas, '(Q)uit', 0, r, 'bold 12px monospace');
+    ctx.strokeRect(cellX(canvas, 0), y, cw, h);
+    drawCell(ctx, canvas, 'File', 0, r, 'bold 12px monospace');
+
+    // Quit button (col 1)
+    ctx.fillStyle = '#e0e0e0';
+    ctx.fillRect(cellX(canvas, 1), y, cw, h);
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cellX(canvas, 1), y, cw, h);
+    drawCell(ctx, canvas, 'QUIT', 1, r, 'bold 12px monospace');
 
     // Status message
     var statusText = state.statusMessage || '';
     if (state.gameWon) statusText = 'You won! Your pyramid is complete!';
     if (state.gameOver) statusText = 'Game Over — Foreclosed!';
-    drawCell(ctx, canvas, statusText, 1, r, '12px monospace', '#333');
+    drawCell(ctx, canvas, statusText, 2, r, '12px monospace', '#333');
 
-    // Run button
+    // Run button (col 9)
     ctx.fillStyle = '#b6d7a8';
-    ctx.fillRect(cellX(canvas, 9), y, cellW(canvas), h);
+    ctx.fillRect(cellX(canvas, 9), y, cw, h);
     ctx.strokeStyle = '#6aa84f';
     ctx.lineWidth = 1;
-    ctx.strokeRect(cellX(canvas, 9), y, cellW(canvas), h);
-    drawCell(ctx, canvas, '(R)un', 9, r, 'bold 12px monospace');
+    ctx.strokeRect(cellX(canvas, 9), y, cw, h);
+    drawCell(ctx, canvas, 'RUN (r)', 9, r, 'bold 12px monospace');
+
+    // File menu dropdown
+    if (state._fileMenuOpen) {
+      drawFileMenu(ctx, canvas);
+    }
+  }
+
+  function drawFileMenu(ctx, canvas) {
+    var menuItems = ['Save', 'Open', 'New Game'];
+    var menuX = cellX(canvas, 0);
+    var menuW = cellW(canvas) * 2;
+    var itemH = 24;
+    var menuY = cellY(canvas, 24) - menuItems.length * itemH;
+
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(menuX, menuY, menuW, menuItems.length * itemH);
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(menuX, menuY, menuW, menuItems.length * itemH);
+
+    for (var i = 0; i < menuItems.length; i++) {
+      var iy = menuY + i * itemH;
+      if (i > 0) {
+        ctx.strokeStyle = '#ddd';
+        ctx.beginPath();
+        ctx.moveTo(menuX, iy);
+        ctx.lineTo(menuX + menuW, iy);
+        ctx.stroke();
+      }
+      drawText(ctx, menuItems[i], menuX + 8, iy + itemH / 2, '13px monospace', TEXT_COLOR);
+    }
   }
 
   // ── Section borders ──

@@ -1,7 +1,7 @@
 'use strict';
 
 const { lookup, debtSupportTable, repayIndexTable } = require('./tables');
-const { absGaussian } = require('./random');
+const { absGaussian, gaussian } = require('./random');
 
 function calculateRealNetWorth(state) {
   const land = state.fallow + state.planted + state.growing + state.ripe;
@@ -13,6 +13,17 @@ function calculateRealNetWorth(state) {
     + state.wheat * state.wheatPrice
     + state.gold
     - state.loan;
+}
+
+function calculateGrossWorth(state) {
+  const land = state.fallow + state.planted + state.growing + state.ripe;
+  return state.slaves * state.slavePrice
+    + state.oxen * state.oxenPrice
+    + state.horses * state.horsePrice
+    + land * state.landPrice
+    + state.manure * state.manurePrice
+    + state.wheat * state.wheatPrice
+    + state.gold;
 }
 
 function headroomFraction(state) {
@@ -34,17 +45,22 @@ function borrow(state, amount) {
   return { ok: true, amount: actual };
 }
 
+function creditCheckFee(rng, totalDebt) {
+  return totalDebt * gaussian(rng, 0.05, 0.01);
+}
+
 function offerCreditCheck(state, amount) {
-  const rnw = calculateRealNetWorth(state);
-  const fee = Math.abs(rnw) * 0.10;
-  const needed = amount + state.loan > state.creditLimit;
-  return { needed, fee, realNetWorth: rnw };
+  const totalDebt = state.loan + amount;
+  const fee = creditCheckFee(state.rng, totalDebt);
+  const needed = totalDebt > state.creditLimit;
+  return { needed, fee, realNetWorth: calculateRealNetWorth(state) };
 }
 
 function executeCreditCheck(state, amount) {
-  const rnw = calculateRealNetWorth(state);
-  const fee = Math.abs(rnw) * 0.10;
+  const totalDebt = state.loan + amount;
+  const fee = creditCheckFee(state.rng, totalDebt);
   state.gold -= fee;
+  const rnw = calculateRealNetWorth(state);
   const newLimit = Math.max(rnw * state.creditRating, state.creditLowerBound);
   state.creditLimit = newLimit;
   const available = newLimit - state.loan;
@@ -71,7 +87,7 @@ function repay(state, amount) {
     state.interestAddition *= 0.80;
   } else {
     const repayIndex = lookup(ratio, repayIndexTable);
-    state.creditRating *= repayIndex;
+    state.creditRating = Math.min(1.0, state.creditRating * repayIndex);
     state.interestAddition /= repayIndex;
   }
   return { ok: true, amount, loanRemaining: state.loan };
@@ -98,6 +114,10 @@ function processEmergencyLoan(state) {
   if (state.gold >= 0) return { needed: false };
   const deficit = Math.abs(state.gold);
   const emergencyAmount = deficit * 1.1;
+  if (state.loan + emergencyAmount > state.creditLimit) {
+    state.gameOver = true;
+    return { needed: true, bankruptcy: true, emergencyAmount };
+  }
   state.creditRating -= (1 - state.creditRating) / 3;
   state.interestAddition += 0.2;
   state.loan += emergencyAmount;
@@ -107,10 +127,8 @@ function processEmergencyLoan(state) {
 
 function checkForeclosure(state) {
   if (state.loan <= 0) return { foreclosed: false, warning: false };
-  const rnw = calculateRealNetWorth(state);
-  const grossWorth = rnw + state.loan;
-  if (grossWorth <= 0) return { foreclosed: true, warning: false };
-  const debtToAssetRatio = state.loan / grossWorth;
+  const nw = calculateGrossWorth(state);
+  const debtToAssetRatio = nw > 0 ? state.loan / nw : 0;
   const debtSupportLimit = lookup(state.creditRating, debtSupportTable);
   if (debtToAssetRatio > debtSupportLimit) {
     return { foreclosed: true, warning: false, debtToAssetRatio, debtSupportLimit };
@@ -135,5 +153,5 @@ module.exports = {
   repay, monthlyInterest, adjustCreditRating,
   processEmergencyLoan, checkForeclosure,
   handleNegativeGoldOverseers, calculateRealNetWorth,
-  headroomFraction
+  calculateGrossWorth, headroomFraction, creditCheckFee
 };

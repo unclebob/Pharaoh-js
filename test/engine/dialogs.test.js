@@ -355,14 +355,14 @@ describe('dialogs', () => {
       expect(state.gold).toBe(49900);
     });
 
-    it('shows insufficient funds error and keeps dialog open', () => {
+    it('shows insufficient funds alert and closes dialog', () => {
       state.gold = 500;
       openDialog(state, 'buySell', 'wheat');
       state.dialog.mode = 'buy';
       state.dialog.input = '100';
       executeDialog(state);
-      expect(state.dialog).not.toBeNull();
-      expect(state.dialog.error).toBeTruthy();
+      expect(state.dialog).toBeNull();
+      expect(state.message).toBeTruthy();
     });
 
     it('shows demand-limit message when supply exceeded', () => {
@@ -401,17 +401,17 @@ describe('dialogs', () => {
       expect(state.wheat).toBe(450);
     });
 
-    it('shows error when selling more than owned', () => {
+    it('shows alert when selling more than owned', () => {
       state.wheat = 100;
       openDialog(state, 'buySell', 'wheat');
       state.dialog.mode = 'sell';
       state.dialog.input = '200';
       executeDialog(state);
-      expect(state.dialog).not.toBeNull();
-      expect(state.dialog.error).toBeTruthy();
+      expect(state.dialog).toBeNull();
+      expect(state.message).toBeTruthy();
     });
 
-    it('shows supply-limit error when exceeding market capacity', () => {
+    it('shows supply-limit alert when exceeding market capacity', () => {
       state.wheat = 5000;
       state.demand.wheat = 1000;
       state.supply.wheat = 0;
@@ -419,8 +419,8 @@ describe('dialogs', () => {
       state.dialog.mode = 'sell';
       state.dialog.input = '2000';
       executeDialog(state);
-      expect(state.dialog).not.toBeNull();
-      expect(state.dialog.error).toBeTruthy();
+      expect(state.dialog).toBeNull();
+      expect(state.message).toBeTruthy();
     });
   });
 
@@ -584,7 +584,7 @@ describe('dialogs', () => {
   // -----------------------------------------------------------
 
   describe('executeDialog — edge cases', () => {
-    it('shows error when keep mode fails (insufficient supply)', () => {
+    it('shows alert when keep mode fails (insufficient supply)', () => {
       state.wheat = 100;
       state.supply.wheat = 2;
       state.gold = 50000;
@@ -594,8 +594,9 @@ describe('dialogs', () => {
       executeDialog(state);
       // keepCommodity tries to buy 400, supply is only 2 -> capped
       // buyCommodity returns {ok: false, capped: true}
-      // keepCommodity passes that through -> executeKeep sets error
-      expect(state.dialog).not.toBeNull();
+      // keepCommodity passes that through -> executeKeep shows alert
+      expect(state.dialog).toBeNull();
+      expect(state.message).toBeTruthy();
     });
 
     it('shows error when borrow fails (no credit)', () => {

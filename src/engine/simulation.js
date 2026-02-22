@@ -19,6 +19,7 @@ const {
 const { runAllSupplyDemandCycles, updateInflation, updatePrices, calculateOwnershipCosts } = require('./market');
 const { processContracts, refreshOffers } = require('./contracts');
 const { selectEventType, applyEvent, getEventMessage } = require('./events');
+const { getForeclosureMessage, getForeclosureWarningMessage, getWinMessage } = require('./messages');
 
 function snapshotPrev(state) {
   return {
@@ -120,7 +121,12 @@ function doFinances(state) {
   handleNegativeGoldOverseers(state, state.rng);
   processEmergencyLoan(state);
   const foreclosure = checkForeclosure(state);
-  if (foreclosure.foreclosed) state.gameOver = true;
+  if (foreclosure.foreclosed) {
+    state.gameOver = true;
+    state.faceMessage = { face: state.neighbors.banker, text: getForeclosureMessage(state.rng) };
+  } else if (foreclosure.warning) {
+    state.faceMessage = { face: state.neighbors.banker, text: getForeclosureWarningMessage(state.rng) };
+  }
 }
 
 function doMarket(state) {
@@ -147,6 +153,7 @@ function doWinCheck(state) {
   const max = maxHeight(state.pyramidBase);
   if (isWin(state.pyramidHeight, max)) {
     state.gameWon = true;
+    state.faceMessage = { face: randomInt(state.rng, 0, 4), text: getWinMessage(state.rng) };
   }
 }
 

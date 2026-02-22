@@ -29,6 +29,15 @@ var PharaohDialogRenderer = (function () {
     FACE_IMAGES.push(img);
   }
 
+  // ── Preload dialog icon images ──
+  var ICON_IMAGES = {};
+  var ICON_NAMES = ['buysell', 'event', 'feed', 'loan', 'manure', 'overseers', 'plant', 'pyramid'];
+  for (var ii = 0; ii < ICON_NAMES.length; ii++) {
+    var iconImg = new Image();
+    iconImg.src = 'resources/images/icon_' + ICON_NAMES[ii] + '.png';
+    ICON_IMAGES[ICON_NAMES[ii]] = iconImg;
+  }
+
   // ── Rounded rectangle ──
 
   function roundRect(ctx, x, y, w, h, radius) {
@@ -61,19 +70,19 @@ var PharaohDialogRenderer = (function () {
     }
   }
 
-  // ── Draw icon placeholder ──
+  // ── Draw dialog icon ──
 
-  function drawIconPlaceholder(ctx, x, y, w, h, label) {
-    ctx.fillStyle = '#d0d0e0';
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = '#888';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x, y, w, h);
-    ctx.fillStyle = '#555';
-    ctx.font = '10px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label || '?', x + w / 2, y + h / 2);
+  function drawDialogIcon(ctx, x, y, size, iconKey) {
+    var img = ICON_IMAGES[iconKey];
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.drawImage(img, x, y, size, size);
+    } else {
+      ctx.fillStyle = '#d0d0e0';
+      ctx.fillRect(x, y, size, size);
+      ctx.strokeStyle = '#888';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, size, size);
+    }
   }
 
   // ── Button drawing ──
@@ -129,58 +138,54 @@ var PharaohDialogRenderer = (function () {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    var pad = 12;
-    var iconSize = h * 0.35;
+    var pad = 10;
+    var iconSize = 40;
     var innerX = x0 + pad;
     var innerY = y0 + pad;
 
-    // Icon placeholder on left
-    var iconLabel = getDialogIconLabel(dialog);
-    drawIconPlaceholder(ctx, innerX, innerY, iconSize, iconSize, iconLabel);
+    // Icon on left
+    var iconKey = getDialogIconKey(dialog);
+    drawDialogIcon(ctx, innerX, innerY, iconSize, iconKey);
 
     // Title to right of icon
-    var titleX = innerX + iconSize + 12;
-    var titleY = innerY + 14;
+    var titleX = innerX + iconSize + 10;
     ctx.fillStyle = '#000';
-    ctx.font = 'bold 14px monospace';
+    ctx.font = 'bold 13px monospace';
     ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillText(getDialogTitle(dialog), titleX, titleY);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(getDialogTitle(dialog), titleX, innerY + iconSize / 2);
 
-    // Input field
-    var inputY = innerY + iconSize + 12;
-    var inputW = w - pad * 2 - 160;
-    var inputH = 24;
+    // Row below icon: radio buttons on left, input on right
+    var rowY = innerY + iconSize + 10;
+    var radioModes = getRadioModes(dialog);
+    var inputX, inputW;
+
+    if (radioModes) {
+      // Draw radios on the left
+      for (var i = 0; i < radioModes.length; i++) {
+        var selected = dialog.mode === radioModes[i].key;
+        drawRadio(ctx, innerX + 8, rowY + i * 18, 5, selected, radioModes[i].label);
+      }
+      // Input field to the right of radios
+      inputX = innerX + 120;
+      inputW = x0 + w - pad - inputX;
+    } else {
+      // No radios — full-width input
+      inputX = innerX;
+      inputW = w - pad * 2;
+    }
+
+    var inputH = 22;
     ctx.fillStyle = '#fff';
-    ctx.fillRect(innerX, inputY, inputW, inputH);
+    ctx.fillRect(inputX, rowY, inputW, inputH);
     ctx.strokeStyle = '#888';
     ctx.lineWidth = 1;
-    ctx.strokeRect(innerX, inputY, inputW, inputH);
+    ctx.strokeRect(inputX, rowY, inputW, inputH);
     ctx.fillStyle = '#000';
     ctx.font = '13px monospace';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(dialog.input || '', innerX + 4, inputY + inputH / 2);
-
-    // Mode radio buttons (for buy/sell, loan, overseer dialogs)
-    if (dialog.type === 'buySell') {
-      drawModeRadios(ctx, titleX, titleY + 22, dialog, [
-        { key: 'buy', label: '(b)uy' },
-        { key: 'sell', label: '(s)ell' },
-        { key: 'keep', label: '(k)eep' }
-      ]);
-    } else if (dialog.type === 'loan') {
-      drawModeRadios(ctx, titleX, titleY + 22, dialog, [
-        { key: 'borrow', label: '(b)orrow' },
-        { key: 'repay', label: '(r)epay' }
-      ]);
-    } else if (dialog.type === 'overseer') {
-      drawModeRadios(ctx, titleX, titleY + 22, dialog, [
-        { key: 'hire', label: '(h)ire' },
-        { key: 'fire', label: '(f)ire' },
-        { key: 'obtain', label: '(o)btain' }
-      ]);
-    }
+    ctx.fillText(dialog.input || '', inputX + 4, rowY + inputH / 2);
 
     // Error message
     if (dialog.error) {
@@ -190,14 +195,14 @@ var PharaohDialogRenderer = (function () {
       ctx.textBaseline = 'top';
       var errText = dialog.error;
       if (typeof errText === 'object' && errText.text) errText = errText.text;
-      ctx.fillText(String(errText).substring(0, 60), innerX, inputY + inputH + 4);
+      ctx.fillText(String(errText).substring(0, 60), innerX, rowY + inputH + 4);
     }
 
     // OK / Cancel buttons
-    var btnW = 70;
-    var btnH = 26;
+    var btnW = 60;
+    var btnH = 22;
     var btnY = y0 + h - btnH - pad;
-    var okX = x0 + w - pad - btnW * 2 - 10;
+    var okX = x0 + w - pad - btnW * 2 - 8;
     var cancelX = x0 + w - pad - btnW;
     drawButton(ctx, okX, btnY, btnW, btnH, 'OK', OK_FILL, OK_STROKE);
     drawButton(ctx, cancelX, btnY, btnW, btnH, 'Cancel', CANCEL_FILL, CANCEL_STROKE);
@@ -208,34 +213,46 @@ var PharaohDialogRenderer = (function () {
     };
   }
 
-  function drawModeRadios(ctx, x, y, dialog, modes) {
-    for (var i = 0; i < modes.length; i++) {
-      var selected = dialog.mode === modes[i].key;
-      drawRadio(ctx, x, y + i * 20, 6, selected, modes[i].label);
-    }
+  function getRadioModes(dialog) {
+    if (dialog.type === 'buySell') return [
+      { key: 'buy', label: '(b)uy' },
+      { key: 'sell', label: '(s)ell' },
+      { key: 'keep', label: '(k)eep' }
+    ];
+    if (dialog.type === 'loan') return [
+      { key: 'borrow', label: '(b)orrow' },
+      { key: 'repay', label: '(r)epay' }
+    ];
+    if (dialog.type === 'overseer') return [
+      { key: 'hire', label: '(h)ire' },
+      { key: 'fire', label: '(f)ire' },
+      { key: 'obtain', label: '(o)btain' }
+    ];
+    return null;
   }
 
   function getDialogTitle(dialog) {
     if (dialog.type === 'buySell') return 'Trade: ' + (dialog.commodity || '');
     if (dialog.type === 'loan') return 'Loan';
     if (dialog.type === 'overseer') return 'Overseers';
-    if (dialog.type === 'planting') return 'Set Planting Quota';
-    if (dialog.type === 'pyramid') return 'Set Stone Quota';
-    if (dialog.type === 'manure') return 'Set Manure Spread';
+    if (dialog.type === 'planting') return 'Planting Quota';
+    if (dialog.type === 'pyramid') return 'Stone Quota';
+    if (dialog.type === 'manure') return 'Manure Spread';
     if (dialog.type === 'slaveFeed') return 'Slave Feed Rate';
     if (dialog.type === 'oxenFeed') return 'Oxen Feed Rate';
     if (dialog.type === 'horseFeed') return 'Horse Feed Rate';
     return 'Dialog';
   }
 
-  function getDialogIconLabel(dialog) {
-    if (dialog.commodity) return dialog.commodity.charAt(0).toUpperCase();
-    if (dialog.type === 'loan') return '$';
-    if (dialog.type === 'overseer') return 'O';
-    if (dialog.type === 'planting') return 'P';
-    if (dialog.type === 'pyramid') return 'Q';
-    if (dialog.type === 'manure') return 'M';
-    return '?';
+  function getDialogIconKey(dialog) {
+    if (dialog.type === 'buySell') return 'buysell';
+    if (dialog.type === 'loan') return 'loan';
+    if (dialog.type === 'overseer') return 'overseers';
+    if (dialog.type === 'planting') return 'plant';
+    if (dialog.type === 'pyramid') return 'pyramid';
+    if (dialog.type === 'manure') return 'manure';
+    if (dialog.type === 'slaveFeed' || dialog.type === 'oxenFeed' || dialog.type === 'horseFeed') return 'feed';
+    return 'event';
   }
 
   // ── Face Message Dialog ──
@@ -350,9 +367,9 @@ var PharaohDialogRenderer = (function () {
       }
 
       var c = offers[i];
-      var text = c.type + ' ' + R.fmt(c.amount) + ' ' + c.commodity +
-                 ' @ ' + R.fmt(c.price) + 'g (' + c.duration + 'mo) - ' +
-                 c.counterpartyName;
+      var text = c.counterpartyName + ': ' + c.type + ' ' +
+                 R.fmt(c.amount) + ' ' + c.commodity +
+                 ' @ ' + R.fmt(c.price) + 'g ' + c.duration + 'mo';
       ctx.fillStyle = '#000';
       ctx.font = '11px monospace';
       ctx.textAlign = 'left';
@@ -362,23 +379,13 @@ var PharaohDialogRenderer = (function () {
       rowIndex++;
     }
 
-    // Confirmation prompt
-    if (dialog.mode === 'confirming') {
-      var confirmY = y0 + h - 36;
-      ctx.fillStyle = '#cc6600';
-      ctx.font = 'bold 12px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('Accept this contract? (y/n)', x0 + w / 2, confirmY);
-    } else {
-      // Navigation hint
-      var hintY = y0 + h - 20;
-      ctx.fillStyle = '#888';
-      ctx.font = '10px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('Up/Down to browse, Enter to accept, Esc to close', x0 + w / 2, hintY);
-    }
+    // Navigation hint
+    var hintY = y0 + h - 20;
+    ctx.fillStyle = '#888';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Click or Enter to accept, Esc to close', x0 + w / 2, hintY);
 
     return { x0: x0, y0: y0, w: w, h: h, listY: listY, rowH: rowH };
   }

@@ -1,6 +1,6 @@
 'use strict';
 
-const { absGaussian } = require('./random');
+const { gaussian } = require('./random');
 const { calculateSalePrice } = require('./health');
 const {
   getSupplyLimitMessage, getDemandLimitMessage,
@@ -123,7 +123,7 @@ function buyLivestock(state, commodity, amount) {
 
   const existingCount = state[cfg.stateField];
   const existingHealth = state[cfg.healthKey];
-  const newHealth = absGaussian(state.rng, 0.8, 0.05);
+  const newHealth = gaussian(state.rng, 0.8, 0.02);
 
   state.gold -= cost;
   state[cfg.stateField] += amount;

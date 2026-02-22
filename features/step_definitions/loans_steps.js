@@ -194,7 +194,7 @@ Then('the loan decreases by {int}', function (expected) {
 Then('the credit rating is multiplied by the repay index', function () {
   const ratio = this.repayAmount / this.prevLoan;
   const repayIndex = lookup(ratio, repayIndexTable);
-  const expected = this.prevCreditRating * repayIndex;
+  const expected = Math.min(1.0, this.prevCreditRating * repayIndex);
   assert(Math.abs(this.state.creditRating - expected) < 0.001,
     `Expected credit rating ${expected}, got ${this.state.creditRating}`);
 });
@@ -338,7 +338,10 @@ Then('the game ends', function () {
 });
 
 Given('the debt-to-asset ratio exceeds 80% of the debt support limit', function () {
-  this.state.loan = 50000;
+  // With new debtSupportTable, creditRating 0.5 gives limit 0.9
+  // Need ratio > 0.8 * 0.9 = 0.72 but <= 0.9
+  // ratio = loan / gold, so 80000/100000 = 0.8
+  this.state.loan = 80000;
   this.state.gold = 100000;
   this.state.slaves = 0;
   this.state.oxen = 0;
@@ -590,7 +593,10 @@ Then('the game continues normally', function () {
 // ── Debt Warning ──
 
 Given('the player has a high debt-to-asset ratio near the foreclosure limit', function () {
-  this.state.loan = 50000;
+  // With new debtSupportTable, creditRating 0.5 gives limit 0.9
+  // Need ratio > 0.8 * 0.9 = 0.72 but <= 0.9
+  // ratio = loan / gold, so 80000/100000 = 0.8
+  this.state.loan = 80000;
   this.state.gold = 100000;
   this.state.slaves = 0;
   this.state.oxen = 0;

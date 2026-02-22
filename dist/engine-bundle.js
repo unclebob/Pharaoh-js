@@ -11,11 +11,13 @@ var PharaohEngine = (() => {
       "use strict";
       var M = 4294967296;
       function createRandom(seed) {
-        return { state: seed % 2 === 0 ? seed + 1 : seed };
+        let s = ((seed | 0) ^ (seed / M | 0)) >>> 0 || 1;
+        if (s % 2 === 0) s = s + 1 >>> 0;
+        return { state: s };
       }
       function nextRaw(rng) {
         const x = rng.state;
-        rng.state = x * (x + 1) % M;
+        rng.state = Math.imul(x, x + 1) >>> 0;
         return rng.state / M;
       }
       function uniform(rng, a, b) {
@@ -69,8 +71,14 @@ var PharaohEngine = (() => {
     "src/engine/state.js"(exports, module) {
       "use strict";
       var { createRandom } = require_random();
-      function makeCommodityMap(val) {
-        return { wheat: val, land: val, slave: val, horse: val, oxen: val, manure: val };
+      function defaultSupply() {
+        return { wheat: 1e6, slave: 1e3, horse: 1e4, oxen: 1e4, land: 100, manure: 1e4 };
+      }
+      function defaultDemand() {
+        return { wheat: 1e7, slave: 1e4, horse: 1e5, oxen: 1e5, land: 1e3, manure: 1e5 };
+      }
+      function defaultProduction() {
+        return { wheat: 1e7, slave: 1e4, horse: 1e5, oxen: 1e5, land: 1e3, manure: 1e5 };
       }
       function createGameState(seed) {
         return {
@@ -105,22 +113,22 @@ var PharaohEngine = (() => {
           pyramidHeight: 0,
           stoneQuota: 0,
           loan: 0,
-          interestRate: 5,
+          interestRate: 0.5,
           interestAddition: 0,
           creditRating: 1,
-          creditLimit: 0,
-          creditLowerBound: 0,
-          inflation: 0,
-          worldGrowth: 0,
-          wheatPrice: 10,
-          landPrice: 5e3,
-          slavePrice: 800,
+          creditLimit: 5e4,
+          creditLowerBound: 5e5,
+          inflation: 1e-3,
+          worldGrowth: 0.05,
+          wheatPrice: 2,
+          landPrice: 1e4,
+          slavePrice: 500,
           horsePrice: 100,
           oxenPrice: 90,
           manurePrice: 20,
-          supply: makeCommodityMap(100),
-          demand: makeCommodityMap(100),
-          production: makeCommodityMap(100),
+          supply: defaultSupply(),
+          demand: defaultDemand(),
+          production: defaultProduction(),
           month: 1,
           year: 1,
           screen: "difficulty",
@@ -173,7 +181,7 @@ var PharaohEngine = (() => {
           horseFeedRate: 55,
           plantingQuota: 10,
           manureSpreadQuota: 50,
-          loan: 433200,
+          loan: 393200,
           gold: 4e4
         },
         normal: {
@@ -222,137 +230,137 @@ var PharaohEngine = (() => {
       var yieldTable = {
         min: 0,
         max: 10,
-        values: [20, 60, 110, 155, 185, 200, 195, 175, 145, 110, 70]
+        values: [20, 35, 70, 100, 150, 200, 180, 140, 100, 50, 0]
       };
       var seasonalYieldTable = {
         min: 1,
         max: 12,
-        values: [0.2, 0.3, 0.5, 0.75, 1, 1.27, 1.27, 1.1, 0.85, 0.6, 0.35]
+        values: [0.2, 0.35, 0.5, 0.8, 1, 1.5, 1, 0.8, 0.55, 0.4, 0.25]
       };
       var slaveNourishmentTable = {
         min: 0,
         max: 10,
-        values: [-0.04, -0.02, 0, 0.02, 0.05, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18]
+        values: [-1, -0.5, -0.185, 0.036, 0.0565, 0.074, 0.0865, 0.098, 0.12, 0.25, 0.18]
       };
       var oxenNourishmentTable = {
         min: 0,
         max: 100,
-        values: [-0.03, -0.01, 0.01, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
+        values: [-1, -0.1, -55e-4, 0, 0.044, 0.068, 0.0825, 0.0915, 0.096, 0.098, 0.1]
       };
       var horseNourishmentTable = {
         min: 0,
         max: 75,
-        values: [-0.03, -0.01, 0.01, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
+        values: [-1, -0.1, -0.046, 0, 0.0695, 0.079, 0.0865, 0.092, 0.0965, 0.099, 0.1]
       };
       var slaveBirthTable = {
         min: 0,
         max: 1,
-        values: [0, 0.01, 0.02, 0.04, 0.06, 0.08, 0.09, 0.1, 0.11, 0.12, 0.14]
+        values: [0, 21e-4, 7e-3, 0.0161, 0.0364, 0.0644, 0.098, 0.121, 0.134, 0.139, 0.14]
       };
       var slaveDeathTable = {
         min: 0,
         max: 1,
-        values: [1, 0.5, 0.25, 0.12, 0.06, 0.03, 0.015, 8e-3, 5e-3, 3e-3, 2e-3]
+        values: [1, 0.485, 0.235, 0.135, 0.0855, 0.0605, 0.0405, 0.0255, 0.0155, 0.0105, 2e-3]
       };
       var oxenBirthTable = {
         min: 0,
         max: 1,
-        values: [0, 5e-3, 0.01, 0.02, 0.03, 0.04, 0.05, 0.055, 0.06, 0.065, 0.07]
+        values: [0, 9e-4, 285e-5, 795e-5, 0.0159, 0.028, 0.038, 0.05, 0.06, 0.065, 0.07]
       };
       var oxenDeathTable = {
         min: 0,
         max: 1,
-        values: [1, 0.5, 0.25, 0.12, 0.06, 0.03, 0.015, 0.01, 8e-3, 6e-3, 5e-3]
+        values: [1, 0.5, 0.216, 0.0959, 0.0559, 0.031, 0.021, 0.01, 9e-3, 5e-3, 4e-3]
       };
       var horseBirthTable = {
         min: 0,
         max: 1,
-        values: [0, 5e-3, 0.01, 0.02, 0.03, 0.035, 0.04, 0.05, 0.055, 0.06, 0.065]
+        values: [0, 12e-4, 27e-4, 45e-4, 1e-3, 0.02, 0.04, 0.05, 0.06, 0.065, 0.07]
       };
       var horseDeathTable = {
         min: 0,
         max: 1,
-        values: [1, 0.5, 0.25, 0.12, 0.06, 0.03, 0.015, 0.01, 7e-3, 5e-3, 4e-3]
+        values: [1, 0.5, 0.245, 0.065, 0.03, 0.02, 0.01, 0.01, 8e-3, 7e-3, 5e-3]
       };
       var workAbilityTable = {
         min: 0,
         max: 1,
-        values: [0, 2, 4, 7, 10, 13, 15, 17, 18, 19, 20]
+        values: [0, 1, 5, 10, 14, 15, 17, 18, 19, 19.5, 20]
       };
       var oxMultTable = {
         min: 0,
         max: 1,
-        values: [1, 1.4, 1.8, 2.2, 2.6, 3, 3.2, 3.4, 3.6, 3.8, 4]
+        values: [1, 1.44, 1.89, 2.27, 2.65, 3, 3.27, 3.5, 3.72, 3.88, 4]
       };
       var positiveMotiveTable = {
         min: 0,
         max: 0.1,
-        values: [0, 0.1, 0.2, 0.35, 0.5, 0.6, 0.7, 0.8, 0.88, 0.95, 1]
+        values: [0, 0.1, 0.2, 0.3, 0.4, 0.45, 0.52, 0.6, 0.63, 0.66, 0.7]
       };
       var negativeMotiveTable = {
         min: 0,
-        max: 1,
-        values: [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
+        max: 100,
+        values: [0, 0.1, 0.2, 0.3, 0.35, 0.38, 0.42, 0.45, 0.47, 0.48, 0.5]
       };
       var stressLashTable = {
         min: 0,
-        max: 1,
-        values: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        max: 10,
+        values: [0, 20, 80, 150, 300, 500, 600, 700, 800, 900, 1e3]
       };
       var lashToSicknessTable = {
         min: 0,
-        max: 1,
-        values: [0, 0.015, 0.03, 0.045, 0.06, 0.075, 0.09, 0.105, 0.12, 0.135, 0.15]
+        max: 100,
+        values: [0, 0.01, 0.03, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.6, 1]
       };
       var laborToSicknessTable = {
         min: 0,
-        max: 30,
-        values: [0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
+        max: 24,
+        values: [0, 5e-4, 15e-4, 2e-3, 5e-3, 0.015, 0.03, 0.1, 0.25, 0.5, 1]
       };
       var overseerEffectivenessTable = {
         min: 0,
-        max: 2,
-        values: [0.3, 0.55, 0.72, 0.84, 0.91, 0.95, 0.975, 0.99, 0.995, 0.997, 1]
+        max: 1,
+        values: [0.3, 0.44, 0.58, 0.681, 0.762, 0.825, 0.884, 0.93, 0.965, 0.983, 0.997]
       };
       var oxenEfficiencyTable = {
         min: 0,
         max: 1,
-        values: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        values: [0, 0.2, 0.1, 0.23, 0.4, 0.7, 0.87, 0.94, 0.965, 0.985, 1]
       };
       var horseEfficiencyTable = {
         min: 0,
         max: 1,
-        values: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        values: [0, 0, 0.015, 0.065, 0.19, 0.66, 0.835, 0.93, 0.99, 1, 1]
       };
       var debtSupportTable = {
         min: 0,
         max: 1,
-        values: [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
+        values: [0, 0.5, 0.7, 0.75, 0.8, 0.9, 1, 1.3, 1.7, 2.3, 3]
       };
       var repayIndexTable = {
         min: 0,
-        max: 1,
-        values: [1, 1.03, 1.06, 1.09, 1.12, 1.15, 1.18, 1.21, 1.24, 1.27, 1.3]
+        max: 0.1,
+        values: [1, 1.02, 1.05, 1.1, 1.15, 1.2, 1.25, 1.275, 1.282, 1.295, 1.3]
       };
       var dunningIntervalTable = {
         min: 0,
         max: 1,
-        values: [5, 34.5, 64, 93.5, 123, 152.5, 182, 211.5, 241, 270.5, 300]
+        values: [5, 6, 8, 12, 20, 30, 45, 60, 90, 200, 300]
       };
       var lashToSufferingTable = {
         min: 0,
         max: 1,
-        values: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        values: [0, 0.01, 0.02, 0.1, 0.2, 0.4, 0.6, 0.9, 0.95, 0.98, 1]
       };
       var healthToSicknessTable = {
         min: 0,
         max: 1,
-        values: [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0]
+        values: [1, 0.95, 0.9, 0.8, 0.4, 0.2, 0.1, 0.04, 0.02, 0.01, 0]
       };
       var hatredToDestructionTable = {
         min: 0,
         max: 1,
-        values: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        values: [0, 0.01, 0.03, 0.08, 0.15, 0.25, 0.4, 0.6, 0.9, 0.95, 1]
       };
       module.exports = {
         lookup,
@@ -826,10 +834,14 @@ var PharaohEngine = (() => {
     "src/engine/loans.js"(exports, module) {
       "use strict";
       var { lookup, debtSupportTable, repayIndexTable } = require_tables();
-      var { absGaussian } = require_random();
+      var { absGaussian, gaussian } = require_random();
       function calculateRealNetWorth(state) {
         const land = state.fallow + state.planted + state.growing + state.ripe;
         return state.slaves * state.slavePrice * state.slaveHealth + state.oxen * state.oxenPrice * state.oxenHealth + state.horses * state.horsePrice * state.horseHealth + land * state.landPrice + state.manure * state.manurePrice + state.wheat * state.wheatPrice + state.gold - state.loan;
+      }
+      function calculateGrossWorth(state) {
+        const land = state.fallow + state.planted + state.growing + state.ripe;
+        return state.slaves * state.slavePrice + state.oxen * state.oxenPrice + state.horses * state.horsePrice + land * state.landPrice + state.manure * state.manurePrice + state.wheat * state.wheatPrice + state.gold;
       }
       function headroomFraction(state) {
         if (state.creditLimit <= 0) return 1;
@@ -848,16 +860,20 @@ var PharaohEngine = (() => {
         }
         return { ok: true, amount: actual };
       }
+      function creditCheckFee(rng, totalDebt) {
+        return totalDebt * gaussian(rng, 0.05, 0.01);
+      }
       function offerCreditCheck(state, amount) {
-        const rnw = calculateRealNetWorth(state);
-        const fee = Math.abs(rnw) * 0.1;
-        const needed = amount + state.loan > state.creditLimit;
-        return { needed, fee, realNetWorth: rnw };
+        const totalDebt = state.loan + amount;
+        const fee = creditCheckFee(state.rng, totalDebt);
+        const needed = totalDebt > state.creditLimit;
+        return { needed, fee, realNetWorth: calculateRealNetWorth(state) };
       }
       function executeCreditCheck(state, amount) {
-        const rnw = calculateRealNetWorth(state);
-        const fee = Math.abs(rnw) * 0.1;
+        const totalDebt = state.loan + amount;
+        const fee = creditCheckFee(state.rng, totalDebt);
         state.gold -= fee;
+        const rnw = calculateRealNetWorth(state);
         const newLimit = Math.max(rnw * state.creditRating, state.creditLowerBound);
         state.creditLimit = newLimit;
         const available = newLimit - state.loan;
@@ -883,7 +899,7 @@ var PharaohEngine = (() => {
           state.interestAddition *= 0.8;
         } else {
           const repayIndex = lookup(ratio, repayIndexTable);
-          state.creditRating *= repayIndex;
+          state.creditRating = Math.min(1, state.creditRating * repayIndex);
           state.interestAddition /= repayIndex;
         }
         return { ok: true, amount, loanRemaining: state.loan };
@@ -907,6 +923,10 @@ var PharaohEngine = (() => {
         if (state.gold >= 0) return { needed: false };
         const deficit = Math.abs(state.gold);
         const emergencyAmount = deficit * 1.1;
+        if (state.loan + emergencyAmount > state.creditLimit) {
+          state.gameOver = true;
+          return { needed: true, bankruptcy: true, emergencyAmount };
+        }
         state.creditRating -= (1 - state.creditRating) / 3;
         state.interestAddition += 0.2;
         state.loan += emergencyAmount;
@@ -915,10 +935,8 @@ var PharaohEngine = (() => {
       }
       function checkForeclosure(state) {
         if (state.loan <= 0) return { foreclosed: false, warning: false };
-        const rnw = calculateRealNetWorth(state);
-        const grossWorth = rnw + state.loan;
-        if (grossWorth <= 0) return { foreclosed: true, warning: false };
-        const debtToAssetRatio = state.loan / grossWorth;
+        const nw = calculateGrossWorth(state);
+        const debtToAssetRatio = nw > 0 ? state.loan / nw : 0;
         const debtSupportLimit = lookup(state.creditRating, debtSupportTable);
         if (debtToAssetRatio > debtSupportLimit) {
           return { foreclosed: true, warning: false, debtToAssetRatio, debtSupportLimit };
@@ -947,7 +965,9 @@ var PharaohEngine = (() => {
         checkForeclosure,
         handleNegativeGoldOverseers,
         calculateRealNetWorth,
-        headroomFraction
+        calculateGrossWorth,
+        headroomFraction,
+        creditCheckFee
       };
     }
   });
@@ -2638,7 +2658,7 @@ var PharaohEngine = (() => {
   var require_trading = __commonJS({
     "src/engine/trading.js"(exports, module) {
       "use strict";
-      var { absGaussian } = require_random();
+      var { gaussian } = require_random();
       var { calculateSalePrice } = require_health();
       var {
         getSupplyLimitMessage,
@@ -2742,7 +2762,7 @@ var PharaohEngine = (() => {
         }
         const existingCount = state[cfg.stateField];
         const existingHealth = state[cfg.healthKey];
-        const newHealth = absGaussian(state.rng, 0.8, 0.05);
+        const newHealth = gaussian(state.rng, 0.8, 0.02);
         state.gold -= cost;
         state[cfg.stateField] += amount;
         state.supply[cfg.supplyKey] -= amount;
@@ -3155,33 +3175,23 @@ var PharaohEngine = (() => {
         state.dialog.selectedIndex = indices[newPos];
         return state;
       }
-      function confirmContract(state) {
-        state.dialog.mode = "confirming";
+      function acceptSelected(state) {
+        const offer = state.contractOffers[state.dialog.selectedIndex];
+        if (!offer || !offer.active) return state;
+        const result = acceptContract(state, state.dialog.selectedIndex);
+        if (result.ok) {
+          const face = offer.counterpartyIndex % 4;
+          const verb = offer.type === "BUY" ? "sell" : "buy";
+          const text = offer.counterpartyName + " will " + verb + " " + offer.amount + " " + offer.commodity + " for " + offer.price + " gold in " + offer.duration + " months.";
+          state.dialog = null;
+          state.faceMessage = { text, face };
+        } else {
+          state.statusMessage = result.message;
+          state.dialog = null;
+        }
         return state;
       }
       function handleContractInput(state, key) {
-        if (state.dialog.mode === "confirming") {
-          return handleConfirmingInput(state, key);
-        }
-        return handleBrowsingInput(state, key);
-      }
-      function handleConfirmingInput(state, key) {
-        if (key === "y") {
-          const result = acceptContract(state, state.dialog.selectedIndex);
-          if (result.ok) {
-            state.dialog = null;
-          } else {
-            state.statusMessage = result.message;
-          }
-          return state;
-        }
-        if (key === "n" || key === "Escape") {
-          state.dialog.mode = "browsing";
-          return state;
-        }
-        return state;
-      }
-      function handleBrowsingInput(state, key) {
         if (key === "Escape") {
           state.dialog = null;
           return state;
@@ -3193,16 +3203,15 @@ var PharaohEngine = (() => {
           return navigateContract(state, "up");
         }
         if (key === "Enter") {
-          return confirmContract(state);
+          return acceptSelected(state);
         }
         return state;
       }
       function clickContractRow(state, rowIndex) {
         if (state.dialog.selectedIndex === rowIndex) {
-          state.dialog.mode = "confirming";
-        } else {
-          state.dialog.selectedIndex = rowIndex;
+          return acceptSelected(state);
         }
+        state.dialog.selectedIndex = rowIndex;
         return state;
       }
       function showNextContractMessage(state) {
@@ -3227,7 +3236,7 @@ var PharaohEngine = (() => {
         blendLivestockHealth,
         openContractDialog,
         navigateContract,
-        confirmContract,
+        acceptSelected,
         handleContractInput,
         clickContractRow,
         showNextContractMessage,
@@ -3321,9 +3330,8 @@ var PharaohEngine = (() => {
         state.wheatSewn = 0;
         state.wheatGrowing = 0;
         state.wheatRipe = 0;
-        const workPerSlave = gaussian(state.rng, 15, 3);
         const workPerAcre = gaussian(state.rng, 5, 1);
-        state.temporaryWorkAddition += Math.max(0, workPerSlave * state.slaves + workPerAcre * totalAcres);
+        state.temporaryWorkAddition += Math.max(0, 15 * state.slaves + workPerAcre * totalAcres);
       }
       function applyPlague(state) {
         const totalPop = state.slaves + state.oxen + state.horses;
@@ -3363,36 +3371,33 @@ var PharaohEngine = (() => {
       function applyActOfMobs(state) {
         const rng = state.rng;
         const totalAcres = state.fallow + state.planted + state.growing + state.ripe;
-        const factor = uniform(rng, 0.6, 0.8);
-        applyMobReduction(state, "wheatSewn", factor);
-        applyMobReduction(state, "wheatGrowing", factor);
-        applyMobReduction(state, "wheatRipe", factor);
-        applyMobReduction(state, "slaves", factor);
-        applyMobReduction(state, "oxen", factor);
-        applyMobReduction(state, "horses", factor);
-        applyMobReduction(state, "wheat", factor);
-        state.manure += Math.floor(state.manure * 0.1 + 10);
+        state.wheatGrowing *= uniform(rng, 0.6, 0.8);
+        state.wheatSewn *= uniform(rng, 0.6, 0.8);
+        state.wheatRipe *= uniform(rng, 0.6, 0.8);
+        state.slaves = Math.floor(state.slaves * uniform(rng, 0.6, 0.8));
+        state.oxen = Math.floor(state.oxen * uniform(rng, 0.6, 0.8));
+        state.horses = Math.floor(state.horses * uniform(rng, 0.6, 0.8));
+        state.wheat = Math.floor(state.wheat * uniform(rng, 0.6, 0.8));
+        state.manure *= uniform(rng, 1.05, 1.2);
+        state.manure += uniform(rng, totalAcres * 0.5, totalAcres * 3);
         const workPerSlave = uniform(rng, 5, 10);
         const workPerAcre = gaussian(rng, 5, 1);
         state.temporaryWorkAddition += Math.max(0, workPerSlave * state.slaves + workPerAcre * totalAcres);
       }
-      function applyMobReduction(state, key, factor) {
-        state[key] = Math.floor(state[key] * factor);
-      }
       function applyWar(state) {
         const rng = state.rng;
-        const army = state.overseers + 1;
-        const enemyBase = army * absGaussian(rng, 1, 0.2);
-        const playerRoll = army * absGaussian(rng, 1, 0.3);
-        const enemyRoll = enemyBase * absGaussian(rng, 1, 0.3);
-        const gain = Math.min(playerRoll / Math.max(enemyRoll, 0.01), 3);
+        const myArmy = state.overseers + 1;
+        const hisArmy = Math.min(1e5, state.overseers) * absGaussian(rng, 1, 0.2) + 1;
+        const myDice = myArmy * absGaussian(rng, 1, 0.3);
+        const hisDice = hisArmy * absGaussian(rng, 1, 0.3);
+        const rawGain = hisDice < 1e-3 ? 0 : myDice / hisDice;
+        const maxGain = (hisArmy + myArmy) / myArmy;
+        const gain = Math.min(rawGain, maxGain);
         state.warGain = gain;
         applyWarToResources(state, gain, rng);
-        if (gain < 1) {
-          const workPerSlave = gaussian(rng, 15, 3);
-          const enemyWork = enemyBase * absGaussian(rng, 1, 0.2);
-          state.temporaryWorkAddition += Math.max(0, workPerSlave * state.slaves + enemyWork);
-        }
+        const workPerSlave = gaussian(rng, 15, 3);
+        const enemyWork = hisArmy * gaussian(rng, 5, 1);
+        state.temporaryWorkAddition += Math.max(0, workPerSlave * state.slaves + enemyWork);
       }
       function applyWarToResources(state, gain, rng) {
         const fields = [
@@ -3580,6 +3585,7 @@ var PharaohEngine = (() => {
       var { runAllSupplyDemandCycles, updateInflation, updatePrices, calculateOwnershipCosts } = require_market();
       var { processContracts, refreshOffers } = require_contracts();
       var { selectEventType, applyEvent, getEventMessage } = require_events();
+      var { getForeclosureMessage, getForeclosureWarningMessage, getWinMessage } = require_messages();
       function snapshotPrev(state) {
         return {
           gold: state.gold,
@@ -3672,7 +3678,12 @@ var PharaohEngine = (() => {
         handleNegativeGoldOverseers(state, state.rng);
         processEmergencyLoan(state);
         const foreclosure = checkForeclosure(state);
-        if (foreclosure.foreclosed) state.gameOver = true;
+        if (foreclosure.foreclosed) {
+          state.gameOver = true;
+          state.faceMessage = { face: state.neighbors.banker, text: getForeclosureMessage(state.rng) };
+        } else if (foreclosure.warning) {
+          state.faceMessage = { face: state.neighbors.banker, text: getForeclosureWarningMessage(state.rng) };
+        }
       }
       function doMarket(state) {
         const rng = state.rng;
@@ -3695,6 +3706,7 @@ var PharaohEngine = (() => {
         const max = maxHeight(state.pyramidBase);
         if (isWin(state.pyramidHeight, max)) {
           state.gameWon = true;
+          state.faceMessage = { face: randomInt(state.rng, 0, 4), text: getWinMessage(state.rng) };
         }
       }
       function simulateMonth(state) {
@@ -3836,12 +3848,8 @@ var PharaohEngine = (() => {
           state.dialog = null;
           return;
         }
-        if (result.capped) {
-          state.message = { text: result.message, face: 0 };
-          state.dialog = null;
-          return;
-        }
-        state.dialog.error = result.message;
+        state.message = { text: result.message, face: 0 };
+        state.dialog = null;
       }
       function executeSell(state, commodity, amount) {
         const result = sellCommodity(state, commodity, amount);
@@ -3849,7 +3857,8 @@ var PharaohEngine = (() => {
           state.dialog = null;
           return;
         }
-        state.dialog.error = result.message;
+        state.message = { text: result.message, face: 0 };
+        state.dialog = null;
       }
       function executeKeep(state, commodity, target) {
         const result = keepCommodity(state, commodity, target);
@@ -3857,7 +3866,8 @@ var PharaohEngine = (() => {
           state.dialog = null;
           return;
         }
-        state.dialog.error = result.message;
+        state.message = { text: result.message, face: 0 };
+        state.dialog = null;
       }
       function executeLoan(state, amount) {
         const { mode } = state.dialog;

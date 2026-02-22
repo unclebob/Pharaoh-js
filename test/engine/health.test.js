@@ -110,12 +110,12 @@ describe('health', () => {
       const rng1 = createRandom(42);
       const s1 = createGameState(42);
       s1.slaveHealth = 0.7;
-      updateSlaveHealth(s1, 0, 0, 20, 2, rng1);
+      updateSlaveHealth(s1, 5, 0, 20, 2, rng1);
 
       const rng2 = createRandom(42);
       const s2 = createGameState(42);
       s2.slaveHealth = 0.7;
-      updateSlaveHealth(s2, 0, 0, 20, 1, rng2);
+      updateSlaveHealth(s2, 5, 0, 20, 1, rng2);
 
       // Higher ox mult => lower laborPerSlave => less work sickness
       expect(s1.slaveHealth).toBeGreaterThan(s2.slaveHealth);
@@ -350,8 +350,8 @@ describe('health', () => {
       expect(oxenEfficiency(1.0)).toBe(1.0);
     });
 
-    it('returns 0.5 for health 0.5', () => {
-      expect(oxenEfficiency(0.5)).toBeCloseTo(0.5, 5);
+    it('returns 0.7 for health 0.5', () => {
+      expect(oxenEfficiency(0.5)).toBeCloseTo(0.7, 5);
     });
 
     it('scales linearly with health', () => {
@@ -370,8 +370,8 @@ describe('health', () => {
       expect(horseEfficiency(1.0)).toBe(1.0);
     });
 
-    it('returns 0.5 for health 0.5', () => {
-      expect(horseEfficiency(0.5)).toBeCloseTo(0.5, 5);
+    it('returns 0.66 for health 0.5', () => {
+      expect(horseEfficiency(0.5)).toBeCloseTo(0.66, 5);
     });
 
     it('scales linearly with health', () => {

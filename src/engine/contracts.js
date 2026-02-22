@@ -412,36 +412,26 @@ function navigateContract(state, direction) {
   return state;
 }
 
-function confirmContract(state) {
-  state.dialog.mode = 'confirming';
+function acceptSelected(state) {
+  const offer = state.contractOffers[state.dialog.selectedIndex];
+  if (!offer || !offer.active) return state;
+  const result = acceptContract(state, state.dialog.selectedIndex);
+  if (result.ok) {
+    const face = offer.counterpartyIndex % 4;
+    const verb = offer.type === 'BUY' ? 'sell' : 'buy';
+    const text = offer.counterpartyName + ' will ' + verb + ' ' +
+      offer.amount + ' ' + offer.commodity +
+      ' for ' + offer.price + ' gold in ' + offer.duration + ' months.';
+    state.dialog = null;
+    state.faceMessage = { text: text, face: face };
+  } else {
+    state.statusMessage = result.message;
+    state.dialog = null;
+  }
   return state;
 }
 
 function handleContractInput(state, key) {
-  if (state.dialog.mode === 'confirming') {
-    return handleConfirmingInput(state, key);
-  }
-  return handleBrowsingInput(state, key);
-}
-
-function handleConfirmingInput(state, key) {
-  if (key === 'y') {
-    const result = acceptContract(state, state.dialog.selectedIndex);
-    if (result.ok) {
-      state.dialog = null;
-    } else {
-      state.statusMessage = result.message;
-    }
-    return state;
-  }
-  if (key === 'n' || key === 'Escape') {
-    state.dialog.mode = 'browsing';
-    return state;
-  }
-  return state;
-}
-
-function handleBrowsingInput(state, key) {
   if (key === 'Escape') {
     state.dialog = null;
     return state;
@@ -453,17 +443,16 @@ function handleBrowsingInput(state, key) {
     return navigateContract(state, 'up');
   }
   if (key === 'Enter') {
-    return confirmContract(state);
+    return acceptSelected(state);
   }
   return state;
 }
 
 function clickContractRow(state, rowIndex) {
   if (state.dialog.selectedIndex === rowIndex) {
-    state.dialog.mode = 'confirming';
-  } else {
-    state.dialog.selectedIndex = rowIndex;
+    return acceptSelected(state);
   }
+  state.dialog.selectedIndex = rowIndex;
   return state;
 }
 
@@ -493,7 +482,7 @@ module.exports = {
   blendLivestockHealth,
   openContractDialog,
   navigateContract,
-  confirmContract,
+  acceptSelected,
   handleContractInput,
   clickContractRow,
   showNextContractMessage,

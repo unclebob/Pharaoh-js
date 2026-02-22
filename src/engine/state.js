@@ -2,8 +2,16 @@
 
 const { createRandom } = require('./random');
 
-function makeCommodityMap(val) {
-  return { wheat: val, land: val, slave: val, horse: val, oxen: val, manure: val };
+function defaultSupply() {
+  return { wheat: 1e6, slave: 1e3, horse: 1e4, oxen: 1e4, land: 1e2, manure: 1e4 };
+}
+
+function defaultDemand() {
+  return { wheat: 1e7, slave: 1e4, horse: 1e5, oxen: 1e5, land: 1e3, manure: 1e5 };
+}
+
+function defaultProduction() {
+  return { wheat: 1e7, slave: 1e4, horse: 1e5, oxen: 1e5, land: 1e3, manure: 1e5 };
 }
 
 function createGameState(seed) {
@@ -17,14 +25,14 @@ function createGameState(seed) {
     wheatSewn: 0, wheatGrowing: 0, wheatRipe: 0,
     manurePerAcre: 0, wtRotRt: 0.05,
     pyramidStones: 0, pyramidBase: 0, pyramidHeight: 0, stoneQuota: 0,
-    loan: 0, interestRate: 5, interestAddition: 0,
-    creditRating: 1.0, creditLimit: 0, creditLowerBound: 0,
-    inflation: 0, worldGrowth: 0,
-    wheatPrice: 10, landPrice: 5000, slavePrice: 800,
+    loan: 0, interestRate: 0.5, interestAddition: 0,
+    creditRating: 1.0, creditLimit: 50000, creditLowerBound: 500000,
+    inflation: 0.001, worldGrowth: 0.05,
+    wheatPrice: 2, landPrice: 10000, slavePrice: 500,
     horsePrice: 100, oxenPrice: 90, manurePrice: 20,
-    supply: makeCommodityMap(100),
-    demand: makeCommodityMap(100),
-    production: makeCommodityMap(100),
+    supply: defaultSupply(),
+    demand: defaultDemand(),
+    production: defaultProduction(),
     month: 1, year: 1,
     screen: 'difficulty', dialog: null, message: null, statusMessage: '',
     contractOffers: [], pendingContracts: [], contractPlayers: [], contractMessages: [],

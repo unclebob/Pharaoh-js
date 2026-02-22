@@ -8,7 +8,7 @@ const SETTINGS = {
     wheat: 20000, manure: 400, overseers: 7,
     slaveFeedRate: 10, oxenFeedRate: 70, horseFeedRate: 55,
     plantingQuota: 10, manureSpreadQuota: 50,
-    loan: 433200, gold: 40000
+    loan: 393200, gold: 40000
   },
   normal: {
     pyramidBase: 346.41, creditLimit: 500000, creditLowerBound: 500000,

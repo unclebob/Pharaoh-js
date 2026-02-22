@@ -80,9 +80,9 @@ Then('default credit limits apply', function () {
 
 Then('default market prices apply', function () {
   // Hard does not override prices, so they remain at createGameState defaults
-  assert.strictEqual(this.state.landPrice, 5000);
-  assert.strictEqual(this.state.wheatPrice, 10);
-  assert.strictEqual(this.state.slavePrice, 800);
+  assert.strictEqual(this.state.landPrice, 10000);
+  assert.strictEqual(this.state.wheatPrice, 2);
+  assert.strictEqual(this.state.slavePrice, 500);
 });
 
 // ── Unlicensed player ──

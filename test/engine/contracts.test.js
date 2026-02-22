@@ -25,7 +25,7 @@ const {
   blendLivestockHealth,
   openContractDialog,
   navigateContract,
-  confirmContract,
+  acceptSelected,
   handleContractInput,
   clickContractRow,
   showNextContractMessage,
@@ -790,12 +790,17 @@ describe('navigateContract', () => {
   });
 });
 
-describe('confirmContract', () => {
-  it('switches mode to confirming', () => {
+describe('acceptSelected', () => {
+  it('accepts selected contract and shows face message', () => {
     const state = makeState(42);
-    state.dialog = { type: 'contracts', mode: 'browsing', selectedIndex: 0 };
-    confirmContract(state);
-    expect(state.dialog.mode).toBe('confirming');
+    state.contractPlayers = initializeContractPlayers(state.rng);
+    state.contractOffers = Array(5).fill(null).map(() => makeContract({ active: true }));
+    state.pendingContracts = [];
+    openContractDialog(state);
+    acceptSelected(state);
+    expect(state.dialog).toBeNull();
+    expect(state.pendingContracts).toHaveLength(1);
+    expect(state.faceMessage).toBeDefined();
   });
 });
 
@@ -808,11 +813,6 @@ describe('handleContractInput', () => {
     state.contractOffers = Array(MAX_OFFERS).fill(null).map(() => makeContract({ active: true }));
     state.pendingContracts = [];
     openContractDialog(state);
-  });
-
-  it('Enter switches to confirming mode', () => {
-    handleContractInput(state, 'Enter');
-    expect(state.dialog.mode).toBe('confirming');
   });
 
   it('ArrowDown navigates down', () => {
@@ -832,36 +832,18 @@ describe('handleContractInput', () => {
     expect(state.dialog).toBeNull();
   });
 
-  it('y in confirming mode accepts contract', () => {
-    state.dialog.mode = 'confirming';
-    handleContractInput(state, 'y');
+  it('Enter accepts contract and shows face message', () => {
+    handleContractInput(state, 'Enter');
     expect(state.dialog).toBeNull();
     expect(state.pendingContracts).toHaveLength(1);
+    expect(state.faceMessage).toBeDefined();
+    expect(state.faceMessage.text).toContain('will');
   });
 
-  it('n in confirming mode returns to browsing', () => {
-    state.dialog.mode = 'confirming';
-    handleContractInput(state, 'n');
-    expect(state.dialog.mode).toBe('browsing');
-  });
-
-  it('Escape in confirming mode returns to browsing', () => {
-    state.dialog.mode = 'confirming';
-    handleContractInput(state, 'Escape');
-    expect(state.dialog.mode).toBe('browsing');
-  });
-
-  it('y in confirming rejects if max pending', () => {
+  it('Enter rejects if max pending', () => {
     state.pendingContracts = Array(10).fill(null).map(() => makeContract());
-    state.dialog.mode = 'confirming';
-    handleContractInput(state, 'y');
+    handleContractInput(state, 'Enter');
     expect(state.statusMessage).toBe('You have too many contracts already');
-  });
-
-  it('unrecognized key in confirming mode does nothing', () => {
-    state.dialog.mode = 'confirming';
-    handleContractInput(state, 'x');
-    expect(state.dialog.mode).toBe('confirming');
   });
 
   it('unrecognized key in browsing mode does nothing', () => {
@@ -887,10 +869,12 @@ describe('clickContractRow', () => {
     expect(state.dialog.mode).toBe('browsing');
   });
 
-  it('confirms when clicking already selected row', () => {
+  it('accepts when clicking already selected row', () => {
     state.dialog.selectedIndex = 0;
     clickContractRow(state, 0);
-    expect(state.dialog.mode).toBe('confirming');
+    expect(state.dialog).toBeNull();
+    expect(state.pendingContracts).toHaveLength(1);
+    expect(state.faceMessage).toBeDefined();
   });
 });
 

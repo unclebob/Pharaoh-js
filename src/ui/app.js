@@ -42,21 +42,49 @@ var PharaohApp = (function () {
   function setupEventListeners() {
     document.addEventListener('keydown', onKeyDown);
     canvas.addEventListener('click', onClick);
+    canvas.addEventListener('mousemove', onMouseMove);
   }
 
   function onKeyDown(e) {
-    var handled = PharaohInput.handleKeyDown(e, state);
-    if (handled) {
-      e.preventDefault();
-      scheduleRender();
+    try {
+      var handled = PharaohInput.handleKeyDown(e, state);
+      if (handled) {
+        e.preventDefault();
+        scheduleRender();
+      }
+    } catch (err) {
+      showError('Key error: ' + err.message);
     }
   }
 
   function onClick(e) {
-    var handled = PharaohInput.handleClick(e, state, canvas, dialogInfo);
-    if (handled) {
-      e.preventDefault();
-      scheduleRender();
+    try {
+      var handled = PharaohInput.handleClick(e, state, canvas, dialogInfo);
+      if (handled) {
+        e.preventDefault();
+        scheduleRender();
+      }
+    } catch (err) {
+      showError('Click error: ' + err.message);
+    }
+  }
+
+  function onMouseMove(e) {
+    try {
+      var handled = PharaohInput.handleMouseMove(e, state, canvas, dialogInfo);
+      if (handled) scheduleRender();
+    } catch (err) {
+      // Mouse move errors not critical
+    }
+  }
+
+  function showError(msg) {
+    if (ctx) {
+      ctx.fillStyle = 'red';
+      ctx.font = 'bold 14px monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(msg, 10, 10);
     }
   }
 
@@ -138,13 +166,17 @@ var PharaohApp = (function () {
     renderScheduled = false;
     if (!state) return;
 
-    if (state.screen === 'difficulty') {
-      dialogInfo = PharaohDialogRenderer.renderDialogs(ctx, canvas, state);
-      return;
-    }
+    try {
+      if (state.screen === 'difficulty') {
+        dialogInfo = PharaohDialogRenderer.renderDialogs(ctx, canvas, state);
+        return;
+      }
 
-    PharaohRenderer.render(ctx, canvas, state);
-    dialogInfo = PharaohDialogRenderer.renderDialogs(ctx, canvas, state);
+      PharaohRenderer.render(ctx, canvas, state);
+      dialogInfo = PharaohDialogRenderer.renderDialogs(ctx, canvas, state);
+    } catch (err) {
+      showError('Render error: ' + err.message);
+    }
   }
 
   function gameLoop(timestamp) {
@@ -190,6 +222,13 @@ var PharaohApp = (function () {
     }
   }
 
+  function newGame() {
+    state = E.state.createGameState(Date.now());
+    state.neighbors = E.neighbors.initializeNeighbors(state.rng);
+    dialogInfo = null;
+    scheduleRender();
+  }
+
   // ── Public API ──
 
   return {
@@ -198,6 +237,7 @@ var PharaohApp = (function () {
     runMonth: runMonth,
     saveToLocal: saveToLocal,
     loadFromLocal: loadFromLocal,
+    newGame: newGame,
     getState: function () { return state; },
     scheduleRender: scheduleRender
   };

@@ -3,12 +3,14 @@
 const M = 0x100000000; // 2^32
 
 function createRandom(seed) {
-  return { state: seed % 2 === 0 ? seed + 1 : seed };
+  let s = ((seed | 0) ^ (seed / M | 0)) >>> 0 || 1;
+  if (s % 2 === 0) s = (s + 1) >>> 0;
+  return { state: s };
 }
 
 function nextRaw(rng) {
   const x = rng.state;
-  rng.state = (x * (x + 1)) % M;
+  rng.state = Math.imul(x, x + 1) >>> 0;
   return rng.state / M;
 }
 

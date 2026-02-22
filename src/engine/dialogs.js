@@ -158,12 +158,8 @@ function executeBuy(state, commodity, amount) {
     state.dialog = null;
     return;
   }
-  if (result.capped) {
-    state.message = { text: result.message, face: 0 };
-    state.dialog = null;
-    return;
-  }
-  state.dialog.error = result.message;
+  state.message = { text: result.message, face: 0 };
+  state.dialog = null;
 }
 
 function executeSell(state, commodity, amount) {
@@ -172,7 +168,8 @@ function executeSell(state, commodity, amount) {
     state.dialog = null;
     return;
   }
-  state.dialog.error = result.message;
+  state.message = { text: result.message, face: 0 };
+  state.dialog = null;
 }
 
 function executeKeep(state, commodity, target) {
@@ -181,7 +178,8 @@ function executeKeep(state, commodity, target) {
     state.dialog = null;
     return;
   }
-  state.dialog.error = result.message;
+  state.message = { text: result.message, face: 0 };
+  state.dialog = null;
 }
 
 // -----------------------------------------------------------

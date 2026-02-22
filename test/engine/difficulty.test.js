@@ -43,9 +43,9 @@ describe('difficulty', () => {
     it('sets creditLimit to 50000', () => { expect(state.creditLimit).toBe(50000); });
     it('sets creditLowerBound to 50000', () => { expect(state.creditLowerBound).toBe(50000); });
     it('sets worldGrowth to 0.05', () => { expect(state.worldGrowth).toBeCloseTo(0.05); });
-    it('keeps default landPrice', () => { expect(state.landPrice).toBe(5000); });
-    it('keeps default wheatPrice', () => { expect(state.wheatPrice).toBe(10); });
-    it('keeps default slavePrice', () => { expect(state.slavePrice).toBe(800); });
+    it('keeps default landPrice', () => { expect(state.landPrice).toBe(10000); });
+    it('keeps default wheatPrice', () => { expect(state.wheatPrice).toBe(2); });
+    it('keeps default slavePrice', () => { expect(state.slavePrice).toBe(500); });
     it('sets screen to game', () => { expect(state.screen).toBe('game'); });
   });
 

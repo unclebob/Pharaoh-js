@@ -73,9 +73,8 @@ function applyLocusts(state) {
   state.wheatSewn = 0;
   state.wheatGrowing = 0;
   state.wheatRipe = 0;
-  const workPerSlave = gaussian(state.rng, 15, 3);
   const workPerAcre = gaussian(state.rng, 5, 1);
-  state.temporaryWorkAddition += Math.max(0, workPerSlave * state.slaves + workPerAcre * totalAcres);
+  state.temporaryWorkAddition += Math.max(0, 15.0 * state.slaves + workPerAcre * totalAcres);
 }
 
 // ── Plague ──
@@ -127,40 +126,36 @@ function applyGodToLandWithWheat(state, landKey, wheatKey, rng) {
 function applyActOfMobs(state) {
   const rng = state.rng;
   const totalAcres = state.fallow + state.planted + state.growing + state.ripe;
-  const factor = uniform(rng, 0.6, 0.8);
-  applyMobReduction(state, 'wheatSewn', factor);
-  applyMobReduction(state, 'wheatGrowing', factor);
-  applyMobReduction(state, 'wheatRipe', factor);
-  applyMobReduction(state, 'slaves', factor);
-  applyMobReduction(state, 'oxen', factor);
-  applyMobReduction(state, 'horses', factor);
-  applyMobReduction(state, 'wheat', factor);
-  state.manure += Math.floor(state.manure * 0.1 + 10);
+  state.wheatGrowing *= uniform(rng, 0.6, 0.8);
+  state.wheatSewn *= uniform(rng, 0.6, 0.8);
+  state.wheatRipe *= uniform(rng, 0.6, 0.8);
+  state.slaves = Math.floor(state.slaves * uniform(rng, 0.6, 0.8));
+  state.oxen = Math.floor(state.oxen * uniform(rng, 0.6, 0.8));
+  state.horses = Math.floor(state.horses * uniform(rng, 0.6, 0.8));
+  state.wheat = Math.floor(state.wheat * uniform(rng, 0.6, 0.8));
+  state.manure *= uniform(rng, 1.05, 1.20);
+  state.manure += uniform(rng, totalAcres * 0.5, totalAcres * 3.0);
   const workPerSlave = uniform(rng, 5, 10);
   const workPerAcre = gaussian(rng, 5, 1);
   state.temporaryWorkAddition += Math.max(0, workPerSlave * state.slaves + workPerAcre * totalAcres);
-}
-
-function applyMobReduction(state, key, factor) {
-  state[key] = Math.floor(state[key] * factor);
 }
 
 // ── War ──
 
 function applyWar(state) {
   const rng = state.rng;
-  const army = state.overseers + 1;
-  const enemyBase = army * absGaussian(rng, 1.0, 0.2);
-  const playerRoll = army * absGaussian(rng, 1.0, 0.3);
-  const enemyRoll = enemyBase * absGaussian(rng, 1.0, 0.3);
-  const gain = Math.min(playerRoll / Math.max(enemyRoll, 0.01), 3.0);
+  const myArmy = state.overseers + 1.0;
+  const hisArmy = Math.min(1e5, state.overseers) * absGaussian(rng, 1.0, 0.2) + 1.0;
+  const myDice = myArmy * absGaussian(rng, 1.0, 0.3);
+  const hisDice = hisArmy * absGaussian(rng, 1.0, 0.3);
+  const rawGain = hisDice < 0.001 ? 0.0 : myDice / hisDice;
+  const maxGain = (hisArmy + myArmy) / myArmy;
+  const gain = Math.min(rawGain, maxGain);
   state.warGain = gain;
   applyWarToResources(state, gain, rng);
-  if (gain < 1.0) {
-    const workPerSlave = gaussian(rng, 15, 3);
-    const enemyWork = enemyBase * absGaussian(rng, 1.0, 0.2);
-    state.temporaryWorkAddition += Math.max(0, workPerSlave * state.slaves + enemyWork);
-  }
+  const workPerSlave = gaussian(rng, 15, 3);
+  const enemyWork = hisArmy * gaussian(rng, 5, 1);
+  state.temporaryWorkAddition += Math.max(0, workPerSlave * state.slaves + enemyWork);
 }
 
 function applyWarToResources(state, gain, rng) {

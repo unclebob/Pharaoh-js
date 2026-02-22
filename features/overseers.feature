@@ -51,12 +51,12 @@ Feature: Overseers
   # -----------------------------------------------------------
 
   Scenario: Horse-to-overseer ratio affects effectiveness
-    Given there are 5 overseers and 10 horses
-    And horse efficiency is 0.9
+    Given there are 5 overseers and 5 horses
+    And horse efficiency is 0.7
     When overseer effectiveness is calculated
-    Then horse-to-overseer ratio = 10 / 5 = 2.0
-    And mounted effectiveness = 2.0 * 0.9 = 1.8
-    And overseer effectiveness is looked up from the effectiveness table based on 1.8
+    Then horse-to-overseer ratio = 5 / 5 = 1.0
+    And mounted effectiveness = 1.0 * 0.93 = 0.93
+    And overseer effectiveness is looked up from the effectiveness table based on 0.93
     And randomized with approximately 10% variance
 
   Scenario: Slave-to-overseer ratio

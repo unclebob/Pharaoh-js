@@ -182,15 +182,15 @@ Feature: Input Validation
   # Buy Validation — Insufficient Gold
   # -----------------------------------------------------------
 
-  Scenario: Buy more than gold allows shows error and keeps dialog open
+  Scenario: Buy more than gold allows shows alert message
     Given a buy-sell dialog is open for wheat
     And the player has 500 gold
     And wheat costs 10 per bushel
     And the dialog mode is set to buy
     And the dialog input contains "100"
     When the player presses enter
-    Then the dialog remains open
-    And an insufficient funds error message is displayed
+    Then the dialog is closed
+    And an alert message is displayed
 
   Scenario: Buy exactly what gold allows succeeds
     Given a buy-sell dialog is open for wheat
@@ -206,16 +206,16 @@ Feature: Input Validation
   # Sell Validation — Selling More Than Owned
   # -----------------------------------------------------------
 
-  Scenario: Sell more than owned shows error and keeps dialog open
+  Scenario: Sell more than owned shows alert message
     Given a buy-sell dialog is open for wheat
     And the player has 100 bushels of wheat
     And the dialog mode is set to sell
     And the dialog input contains "200"
     When the player presses enter
-    Then the dialog remains open
-    And a selling-more error message is displayed
+    Then the dialog is closed
+    And an alert message is displayed
 
-  Scenario: Sell exceeding market capacity shows supply-limit error
+  Scenario: Sell exceeding market capacity shows alert message
     Given a buy-sell dialog is open for wheat
     And the player has 5000 bushels of wheat
     And the wheat demand is 1000
@@ -223,8 +223,8 @@ Feature: Input Validation
     And the dialog mode is set to sell
     And the dialog input contains "2000"
     When the player presses enter
-    Then the dialog remains open
-    And a supply-limit error message is displayed
+    Then the dialog is closed
+    And an alert message is displayed
 
   # -----------------------------------------------------------
   # Buy Validation — Supply Limited (Demand Limit)

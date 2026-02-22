@@ -169,7 +169,7 @@ describe('overseers', () => {
 
     it('horse efficiency reduces mounted effectiveness', () => {
       state.overseers = 5;
-      state.horses = 10;
+      state.horses = 2;
 
       state.horseHealth = 1.0;
       const rng1 = createRandom(42);

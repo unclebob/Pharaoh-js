@@ -243,36 +243,22 @@ Feature: Contracts
     When the player presses the down arrow
     Then the first offer is highlighted
 
-  Scenario: Enter on an offer shows confirmation
+  Scenario: Enter on an offer accepts it
     Given the contracts dialog is open in browsing mode
     When the player presses Enter
-    Then the dialog switches to confirming mode
-
-  Scenario: Accepting an offer moves it to pending
-    Given the contracts dialog is in confirming mode
-    When the player presses 'y'
     Then the offer moves to pending contracts
-    And the dialog is dismissed
-
-  Scenario: Rejecting an offer returns to browsing
-    Given the contracts dialog is in confirming mode
-    When the player presses 'n'
-    Then the dialog returns to browsing mode
-
-  Scenario: Esc from confirming returns to browsing
-    Given the contracts dialog is in confirming mode
-    When the player presses Esc
-    Then the dialog returns to browsing mode
+    And a face message is shown confirming the contract
 
   Scenario: Clicking an offer row selects it
     Given the contracts dialog is open with 5 active offers
     When the player clicks on offer row 2
     Then the selected offer index is 2
 
-  Scenario: Clicking the selected offer confirms it
+  Scenario: Clicking the selected offer accepts it
     Given the contracts dialog is open with 5 active offers
     When the player clicks on offer row 0
-    Then the dialog switches to confirming mode
+    Then the offer moves to pending contracts
+    And a face message is shown confirming the contract
 
   Scenario: Esc from browsing closes dialog
     Given the contracts dialog is open in browsing mode
@@ -281,8 +267,8 @@ Feature: Contracts
 
   Scenario: Cannot accept when at max pending contracts
     Given the player has 10 pending contracts
-    And the contracts dialog is in confirming mode for acceptance
-    When the player presses 'y'
+    And the contracts dialog is open in browsing mode
+    When the player presses Enter
     Then the acceptance is rejected with an error
 
   # -----------------------------------------------------------

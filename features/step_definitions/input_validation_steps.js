@@ -238,6 +238,11 @@ Then('a demand-limit message is displayed', function () {
   assert(typeof this.state.message.text === 'string');
 });
 
+Then('an alert message is displayed', function () {
+  assert(this.state.message !== null, 'An alert message should be set');
+  assert(typeof this.state.message.text === 'string');
+});
+
 // -----------------------------------------------------------
 // Dialog state assertions
 // -----------------------------------------------------------

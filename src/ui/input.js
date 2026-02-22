@@ -223,12 +223,42 @@ var PharaohInput = (function () {
     var ch = PharaohRenderer.cellH(canvas);
     var barY = PharaohRenderer.cellY(canvas, 24);
 
+    // File menu dropdown clicks (above the bar)
+    if (state._fileMenuOpen) {
+      var menuItems = ['save', 'open', 'newGame'];
+      var itemH = 24;
+      var menuX = PharaohRenderer.cellX(canvas, 0);
+      var menuW = cw * 2;
+      var menuY = barY - menuItems.length * itemH;
+
+      if (mx >= menuX && mx <= menuX + menuW && my >= menuY && my < barY) {
+        var idx = Math.floor((my - menuY) / itemH);
+        state._fileMenuOpen = false;
+        if (menuItems[idx] === 'save') {
+          app.saveToLocal();
+        } else if (menuItems[idx] === 'open') {
+          app.loadFromLocal();
+        } else if (menuItems[idx] === 'newGame') {
+          app.newGame();
+        }
+        return true;
+      }
+      // Click outside menu closes it
+      state._fileMenuOpen = false;
+      return true;
+    }
+
     if (my < barY || my > barY + ch) return false;
 
-    // Quit button (col 0)
+    // File button (col 0)
     if (mx < cw) {
-      // For now, just set a status message
-      state.statusMessage = 'Quit: Not yet implemented';
+      state._fileMenuOpen = !state._fileMenuOpen;
+      return true;
+    }
+
+    // Quit button (col 1)
+    if (mx >= cw && mx < cw * 2) {
+      app.newGame();
       return true;
     }
 
@@ -274,6 +304,33 @@ var PharaohInput = (function () {
            my >= rect.y && my <= rect.y + rect.h;
   }
 
+  function handleMouseMove(e, state, canvas, dialogInfo) {
+    if (!state.dialog || state.dialog.type !== 'contracts') return false;
+    if (state.dialog.mode !== 'browsing') return false;
+    if (!dialogInfo || !dialogInfo.info) return false;
+
+    var rect = canvas.getBoundingClientRect();
+    var my = e.clientY - rect.top;
+    var mx = e.clientX - rect.left;
+    var info = dialogInfo.info;
+    var offers = state.contractOffers || [];
+
+    var rowIndex = 0;
+    for (var i = 0; i < offers.length; i++) {
+      if (!offers[i] || !offers[i].active) continue;
+      var ry = info.listY + rowIndex * info.rowH;
+      if (my >= ry && my < ry + info.rowH && mx >= info.x0 && mx <= info.x0 + info.w) {
+        if (state.dialog.selectedIndex !== i) {
+          state.dialog.selectedIndex = i;
+          return true;
+        }
+        return false;
+      }
+      rowIndex++;
+    }
+    return false;
+  }
+
   function checkContractMessages(state) {
     E.contracts.showNextContractMessage(state);
   }
@@ -282,6 +339,7 @@ var PharaohInput = (function () {
     init: init,
     handleKeyDown: handleKeyDown,
     handleClick: handleClick,
+    handleMouseMove: handleMouseMove,
     checkContractMessages: checkContractMessages
   };
 

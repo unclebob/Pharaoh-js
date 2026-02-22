@@ -17,7 +17,7 @@ const {
   blendLivestockHealth,
   openContractDialog,
   navigateContract,
-  confirmContract,
+  acceptSelected,
   handleContractInput,
   clickContractRow,
   showNextContractMessage,
@@ -820,32 +820,14 @@ When('the player presses Enter', function () {
   handleContractInput(this.state, 'Enter');
 });
 
-Then('the dialog switches to confirming mode', function () {
-  assert.strictEqual(this.state.dialog.mode, 'confirming');
-});
-
-Given('the contracts dialog is in confirming mode', function () {
-  ensurePlayers(this);
-  this.state.contractOffers = Array(MAX_OFFERS).fill(null).map(() =>
-    makeTestContract({ active: true })
-  );
-  this.state.pendingContracts = [];
-  openContractDialog(this.state);
-  confirmContract(this.state);
-  assert.strictEqual(this.state.dialog.mode, 'confirming');
-});
-
 Then('the offer moves to pending contracts', function () {
   assert(this.state.pendingContracts.length > 0);
 });
 
-Then('the dialog is dismissed', function () {
-  assert.strictEqual(this.state.dialog, null);
-});
-
-Then('the dialog returns to browsing mode', function () {
-  assert(this.state.dialog !== null);
-  assert.strictEqual(this.state.dialog.mode, 'browsing');
+Then('a face message is shown confirming the contract', function () {
+  assert(this.state.faceMessage !== null && this.state.faceMessage !== undefined);
+  assert(this.state.faceMessage.text.includes('will'));
+  assert(this.state.dialog === null);
 });
 
 When('the player presses Esc', function () {
@@ -864,17 +846,7 @@ Then('the contracts dialog closes', function () {
   assert.strictEqual(this.state.dialog, null);
 });
 
-Given('the contracts dialog is in confirming mode for acceptance', function () {
-  ensurePlayers(this);
-  this.state.contractOffers = Array(MAX_OFFERS).fill(null).map(() =>
-    makeTestContract({ active: true })
-  );
-  openContractDialog(this.state);
-  confirmContract(this.state);
-});
-
 Then('the acceptance is rejected with an error', function () {
-  // Dialog should still exist (not dismissed) and status message set
   assert(this.state.statusMessage === 'You have too many contracts already');
 });
 

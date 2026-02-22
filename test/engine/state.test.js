@@ -88,9 +88,9 @@ describe('state', () => {
 
   describe('financial fields', () => {
     it.each([
-      ['loan', 0], ['interestRate', 5], ['interestAddition', 0],
-      ['creditRating', 1.0], ['creditLimit', 0], ['creditLowerBound', 0],
-      ['inflation', 0], ['worldGrowth', 0]
+      ['loan', 0], ['interestRate', 0.5], ['interestAddition', 0],
+      ['creditRating', 1.0], ['creditLimit', 50000], ['creditLowerBound', 500000],
+      ['inflation', 0.001], ['worldGrowth', 0.05]
     ])('%s defaults to %s', (field, expected) => {
       expect(state[field]).toBe(expected);
     });
@@ -98,7 +98,7 @@ describe('state', () => {
 
   describe('price fields', () => {
     it.each([
-      ['wheatPrice', 10], ['landPrice', 5000], ['slavePrice', 800],
+      ['wheatPrice', 2], ['landPrice', 10000], ['slavePrice', 500],
       ['horsePrice', 100], ['oxenPrice', 90], ['manurePrice', 20]
     ])('%s defaults to %d', (field, expected) => {
       expect(state[field]).toBe(expected);
@@ -106,18 +106,31 @@ describe('state', () => {
   });
 
   describe('supply/demand/production', () => {
-    const commodities = ['wheat', 'land', 'slave', 'horse', 'oxen', 'manure'];
-
-    it('supply has all commodity keys at 100', () => {
-      commodities.forEach(c => expect(state.supply[c]).toBe(100));
+    it('supply has per-commodity defaults from Clojure spec', () => {
+      expect(state.supply.wheat).toBe(1e6);
+      expect(state.supply.slave).toBe(1e3);
+      expect(state.supply.horse).toBe(1e4);
+      expect(state.supply.oxen).toBe(1e4);
+      expect(state.supply.land).toBe(1e2);
+      expect(state.supply.manure).toBe(1e4);
     });
 
-    it('demand has all commodity keys at 100', () => {
-      commodities.forEach(c => expect(state.demand[c]).toBe(100));
+    it('demand has per-commodity defaults from Clojure spec', () => {
+      expect(state.demand.wheat).toBe(1e7);
+      expect(state.demand.slave).toBe(1e4);
+      expect(state.demand.horse).toBe(1e5);
+      expect(state.demand.oxen).toBe(1e5);
+      expect(state.demand.land).toBe(1e3);
+      expect(state.demand.manure).toBe(1e5);
     });
 
-    it('production has all commodity keys at 100', () => {
-      commodities.forEach(c => expect(state.production[c]).toBe(100));
+    it('production has per-commodity defaults from Clojure spec', () => {
+      expect(state.production.wheat).toBe(1e7);
+      expect(state.production.slave).toBe(1e4);
+      expect(state.production.horse).toBe(1e5);
+      expect(state.production.oxen).toBe(1e5);
+      expect(state.production.land).toBe(1e3);
+      expect(state.production.manure).toBe(1e5);
     });
   });
 

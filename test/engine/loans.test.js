@@ -119,7 +119,8 @@ describe('loans', () => {
       const prevGold = state.gold;
       const result = executeCreditCheck(state, 1000);
       expect(result.granted).toBe(true);
-      expect(state.gold).toBeLessThan(prevGold);
+      expect(result.fee).toBeGreaterThan(0);
+      expect(state.gold).toBeCloseTo(prevGold - result.fee + 1000, 5);
       expect(state.loan).toBe(1000);
     });
 
@@ -312,19 +313,18 @@ describe('loans', () => {
     });
 
     it('warns when ratio exceeds 80% of support limit', () => {
-      // Need to set up a state where debt/gross is between 80% of support and support
+      // At creditRating 0.5, debtSupportLimit = 0.9
+      // Need ratio between 0.72 (0.8*0.9) and 0.9
       const state = makeState({
-        loan: 50000, gold: 100000,
+        loan: 80000, gold: 100000,
         slaves: 0, oxen: 0, horses: 0,
         fallow: 0, planted: 0, growing: 0, ripe: 0,
         manure: 0, wheat: 0, creditRating: 0.5
       });
-      // grossWorth = gold + loan = 100000 + 0 (assets) = 100000 - 50000 + 50000 = 100000
-      // wait: rnw = 0 + 100000 - 50000 = 50000, grossWorth = 50000 + 50000 = 100000
-      // ratio = 50000/100000 = 0.5
-      // debtSupportLimit at 0.5 = lookup(0.5, debtSupportTable) = 0.55
-      // 0.5 > 0.8 * 0.55 = 0.44 => warning
-      // 0.5 < 0.55 => not foreclosed
+      // rnw = 100000 - 80000 = 20000, grossWorth = 20000 + 80000 = 100000
+      // ratio = 80000/100000 = 0.8
+      // 0.8 > 0.8 * 0.9 = 0.72 => warning
+      // 0.8 < 0.9 => not foreclosed
       const result = checkForeclosure(state);
       expect(result.foreclosed).toBe(false);
       expect(result.warning).toBe(true);

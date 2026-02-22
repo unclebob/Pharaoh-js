@@ -121,9 +121,9 @@ describe('tables', () => {
       expect(lookup(1, tables.oxMultTable)).toBeCloseTo(4, 0);
     });
 
-    it('debtSupportTable: 0 credit -> 0.3, 1 credit -> 0.8', () => {
-      expect(lookup(0, tables.debtSupportTable)).toBeCloseTo(0.3, 1);
-      expect(lookup(1, tables.debtSupportTable)).toBeCloseTo(0.8, 1);
+    it('debtSupportTable: 0 credit -> 0.0, 1 credit -> 3.0', () => {
+      expect(lookup(0, tables.debtSupportTable)).toBeCloseTo(0.0, 1);
+      expect(lookup(1, tables.debtSupportTable)).toBeCloseTo(3.0, 1);
     });
 
     it('dunningIntervalTable: 0 credit -> 5, 1 credit -> 300', () => {
