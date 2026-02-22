@@ -326,9 +326,9 @@ nervous. This will cause them to beat the slaves, which has the
 rewarding effect of getting them to do more work.
 
 It is very important to manage the stress level of your overseers,
-otherwise they will quickly kill all your slaves. This is very tricky
-to manage, since there is no direct indicator of their stress (except
-for an occasional chat from a neighbor).
+otherwise they will quickly kill all your slaves. The overseer
+pressure reading on the game screen gives a hint, and your neighbors
+may also comment on it.
 
 Just remember, whenever a month goes by where all the work did not
 get done, the overseers will be a bit nervous that month. If two or
@@ -417,8 +417,9 @@ ox, and horse per month. Click to adjust.
 **Spread & Plant.** How many acres you are planting and how many tons
 of manure you are spreading. Click to adjust.
 
-**Overseers.** How many overseers are employed and the monthly salary
-per overseer. Click to hire, fire, or obtain.
+**Overseers.** How many overseers are employed, the monthly salary
+per overseer, and current overseer pressure. Click to hire, fire,
+or obtain.
 
 **Pending Contracts.** The contracts you are committed to.
 
@@ -472,14 +473,14 @@ order to get your current head count to the specified number.
 #### Contracts
 
 To browse the currently offered contracts, press `c` or click on the
-contracts section. If you see one you like, select it and confirm
-your commitment. The contract will appear in your list of pending
-contracts.
+contracts section. Hover or use arrow keys to browse offers. Click a
+selected offer or press Enter to accept it. The contract will appear
+in your list of pending contracts.
 
 There is no way to escape from a contract once you have committed it.
 
-Save and load are available from the File menu. Games are saved to
-the `saves/` directory by default.
+Save and load are available from the File menu in the bottom bar.
+Games are saved to the browser's localStorage.
 
 ### Skill Levels
 
@@ -571,8 +572,15 @@ Requires [Node.js](https://nodejs.org) (v18+).
 npm install
 ```
 
-Then open `index.html` in a browser. The game renders on an HTML
-Canvas element and runs entirely client-side.
+Then start the development server and open in a browser:
+
+```bash
+python3 serve.py        # serves on http://localhost:8080
+```
+
+The game renders on an HTML Canvas element and runs entirely
+client-side. The server only serves static files with no-cache
+headers.
 
 For development, rebuild the engine bundle after changes:
 
@@ -590,10 +598,10 @@ npm run test:all  # Both
 
 The test suite includes:
 
-- **1187 Jest unit tests** across 20 test suites covering trading,
+- **1183 Jest unit tests** across 20 test suites covering trading,
   loans, overseers, health, planting, contracts, persistence, input
   handling, dialog execution, simulation orchestration, and more.
-- **370 Cucumber scenarios** across 15 feature files exercising
+- **367 Cucumber scenarios** across 15 feature files exercising
   end-to-end game behavior through Gherkin acceptance tests.
 
 ## Project Structure
@@ -630,6 +638,7 @@ src/ui/                Browser UI (Canvas rendering)
 src/engine-entry.js    esbuild entry point for browser bundle
 index.html             Main page with 1024x768 canvas
 dist/engine-bundle.js  Bundled engine for browser
+serve.py               No-cache development server (port 8080)
 
 features/              Gherkin feature files (15)
 features/step_definitions/  Cucumber step definitions
@@ -665,4 +674,4 @@ Key milestones in the rewrite:
 - Neighbor visit system with text-to-speech
 - Difficulty selection screen
 - Save/load with localStorage persistence
-- 1187 Jest unit tests and 370 Cucumber acceptance scenarios
+- 1183 Jest unit tests and 367 Cucumber acceptance scenarios
